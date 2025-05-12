@@ -1,5 +1,6 @@
 package it.epicode.simposiodermedallo.auth;
 
+import it.epicode.simposiodermedallo.utenti.persone.utentinormali.UtenteNormaleRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -10,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Set;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("")
 @RequiredArgsConstructor
 @Slf4j
 public class AuthController {
@@ -23,7 +24,7 @@ public class AuthController {
         return appUser;
     }
     @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody RegisterRequest registerRequest) {
+    public ResponseEntity<String> register(@RequestBody UtenteNormaleRequest registerRequest) {
         appUserService.registerUser(
                 registerRequest.getUsername(),
                 registerRequest.getPassword(),

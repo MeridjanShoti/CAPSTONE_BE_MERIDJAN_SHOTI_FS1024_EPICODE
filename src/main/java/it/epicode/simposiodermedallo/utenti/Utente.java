@@ -13,7 +13,6 @@ import java.time.LocalDate;
 @MappedSuperclass
 public abstract class Utente {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String email;
     @Column(columnDefinition = "TEXT")
@@ -21,6 +20,6 @@ public abstract class Utente {
     private String avatar;
     private String copertina;
     private LocalDate dataRegistrazione;
-    @OneToOne(cascade={CascadeType.REMOVE})
+    @OneToOne(cascade={CascadeType.REMOVE, CascadeType.PERSIST})
     private AppUser appUser;
 }

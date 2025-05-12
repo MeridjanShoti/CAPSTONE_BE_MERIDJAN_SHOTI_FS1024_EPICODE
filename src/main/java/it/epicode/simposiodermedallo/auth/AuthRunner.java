@@ -47,7 +47,10 @@ public class AuthRunner implements ApplicationRunner {
                 String email = (nome + cognome + "@gmail.com").toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9]", "");
                 LocalDate dataNascita = LocalDate.of(faker.number().numberBetween(1950, 2000), faker.number().numberBetween(1, 12), faker.number().numberBetween(1, 28));
                 String username = (nome + "." + cognome).toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9]", "");
-                appUserService.registerUser( username, passwordEncoder.encode("userpwd"), Set.of(Role.ROLE_USER));
+                AppUser appUser = new AppUser();
+                appUser.setUsername(username);
+                appUser.setPassword(passwordEncoder.encode("userpwd"));
+                appUser.setRoles(Set.of(Role.ROLE_USER));
                 utente.setNome(nome);
                 utente.setCognome(cognome);
                 utente.setEmail(email);
@@ -55,10 +58,8 @@ public class AuthRunner implements ApplicationRunner {
                 utente.setBio(faker.lorem().paragraph());
                 utente.setAvatar("https://ui-avatars.com/api/?name=" + utente.getNome() + "+" + utente.getCognome());
                 utente.setCopertina("XXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-                AppUser appUser = appUserRepository.findByUsername(username)
-                        .orElseThrow(() -> new RuntimeException("AppUser non trovato"));
-
                 utente.setAppUser(appUser);
+                utente.setId(appUser.getId());
                 utenteNormaleRepository.save(utente);
 
 

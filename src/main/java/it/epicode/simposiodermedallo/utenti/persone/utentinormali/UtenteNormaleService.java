@@ -4,6 +4,8 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 
 public class UtenteNormaleService {
@@ -12,12 +14,12 @@ public class UtenteNormaleService {
     public UtenteNormale save(UtenteNormale utenteNormale) {
         return utenteNormaleRepository.save(utenteNormale);
     }
-    public UtenteNormale findById(long id) {
+    public UtenteNormale getUtenteNormaleById(long id) {
         return utenteNormaleRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Utente non trovato"));
     }
-    public void deleteById(long id) {
-        utenteNormaleRepository.deleteById(id);
-    }
+    public List<UtenteNormale> getAllUtenti() {return utenteNormaleRepository.findAll();}
+
+
 
 
 }
