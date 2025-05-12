@@ -2,7 +2,7 @@ package it.epicode.simposiodermedallo.utenti.servizi.gestorisaleprove.saleprove;
 
 import it.epicode.simposiodermedallo.utenti.servizi.gestorisaleprove.GestoreSala;
 import it.epicode.simposiodermedallo.utenti.servizi.gestorisaleprove.saleprove.prenotazioni.PrenotazioneSalaProve;
-import it.epicode.simposiodermedallo.utenti.servizi.gestorisaleprove.saleprove.prenotazioni.disponibilità.SlotPrenotati;
+import it.epicode.simposiodermedallo.utenti.servizi.gestorisaleprove.saleprove.prenotazioni.slotprenotati.SlotPrenotati;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,7 +19,7 @@ public class SalaProve {
     @Id
     @GeneratedValue (strategy = GenerationType.IDENTITY)
     private Long id;
-    @OneToMany
+    @OneToMany (mappedBy = "salaProve")
     private List<SlotPrenotati> slotPrenotati;
     @ManyToOne
     private GestoreSala gestoreSala;
@@ -28,7 +28,9 @@ public class SalaProve {
     private int capienzaMax;
     private double prezzoOrario;
     private List<String> fotoSala;
+    @Column(columnDefinition = "TEXT")
     private String descrizione;
+    @Column(columnDefinition = "TEXT")
     private String regolamento;
     @OneToMany
     private List<PrenotazioneSalaProve> prenotazioni;

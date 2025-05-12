@@ -25,6 +25,7 @@ public class Evento {
     private int maxPartecipanti;
     private int minPartecipanti;
     private LocalDate dataEvento;
+    @Column(columnDefinition = "TEXT")
     private String note;
     @ManyToMany
     private List<UtenteNormale> partecipanti;

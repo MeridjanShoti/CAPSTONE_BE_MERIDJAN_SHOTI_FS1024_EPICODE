@@ -2,7 +2,7 @@ package it.epicode.simposiodermedallo.utenti.servizi.gestorisaleprove.saleprove.
 
 import it.epicode.simposiodermedallo.utenti.persone.utentinormali.UtenteNormale;
 import it.epicode.simposiodermedallo.utenti.servizi.gestorisaleprove.saleprove.SalaProve;
-import it.epicode.simposiodermedallo.utenti.servizi.gestorisaleprove.saleprove.prenotazioni.disponibilità.SlotPrenotati;
+import it.epicode.simposiodermedallo.utenti.servizi.gestorisaleprove.saleprove.prenotazioni.slotprenotati.SlotPrenotati;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;

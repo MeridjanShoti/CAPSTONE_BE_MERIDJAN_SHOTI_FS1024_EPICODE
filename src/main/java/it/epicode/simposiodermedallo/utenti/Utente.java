@@ -14,11 +14,13 @@ import java.time.LocalDate;
 public abstract class Utente {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     private String email;
+    @Column(columnDefinition = "TEXT")
     private String bio;
     private String avatar;
     private String copertina;
     private LocalDate dataRegistrazione;
-    @OneToOne(cascade={CascadeType.REMOVE, CascadeType.PERSIST})
+    @OneToOne(cascade={CascadeType.REMOVE})
     private AppUser appUser;
 }
