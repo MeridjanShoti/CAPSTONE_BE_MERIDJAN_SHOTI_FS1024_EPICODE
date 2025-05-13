@@ -38,6 +38,8 @@ public class AuthController {
     private GestoreSalaRepository gestoreSalaRepository;
     @Autowired
     private OrganizzatoreEventiRepository organizzatoreEventiRepository;
+    @Autowired
+    private AppUserRepository appUserRepository;
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/current-user")
@@ -73,6 +75,11 @@ public class AuthController {
         }
         if (organizzatoreEventiRepository.existsById(id)) {
             return organizzatoreEventiRepository.findById(id)
+                    .map(ResponseEntity::ok)
+                    .orElseThrow();
+        }
+        if (appUserRepository.findByIdAndRolesContaining(id, Role.ROLE_ADMIN).isPresent()) {
+            return appUserRepository.findById(id)
                     .map(ResponseEntity::ok)
                     .orElseThrow();
         }
