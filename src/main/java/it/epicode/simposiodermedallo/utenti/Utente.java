@@ -21,5 +21,6 @@ public abstract class Utente {
     private String copertina;
     private LocalDate dataRegistrazione;
     @OneToOne(cascade={CascadeType.REMOVE, CascadeType.PERSIST})
+    @MapsId
     private AppUser appUser;
 }

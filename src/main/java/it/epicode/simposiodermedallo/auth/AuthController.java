@@ -1,6 +1,8 @@
 package it.epicode.simposiodermedallo.auth;
 
+import it.epicode.simposiodermedallo.utenti.persone.insegnanti.InsegnanteRequest;
 import it.epicode.simposiodermedallo.utenti.persone.utentinormali.UtenteNormaleRequest;
+import it.epicode.simposiodermedallo.utenti.servizi.ServizioRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -23,13 +25,15 @@ public class AuthController {
     public AppUser getCurrentUser(@AuthenticationPrincipal AppUser appUser) {
         return appUser;
     }
+
+    @PreAuthorize("hasRole('USER')")
+    @GetMapping("/current-user-complete")
+
+
+
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody UtenteNormaleRequest registerRequest) {
-        appUserService.registerUser(
-                registerRequest.getUsername(),
-                registerRequest.getPassword(),
-                Set.of(Role.ROLE_USER) // Assegna il ruolo di default
-        );
+        appUserService.registerUtenteNormale(registerRequest);
         return ResponseEntity.ok("Registrazione utente avvenuta con successo");
     }
     @PreAuthorize("hasRole('ADMIN')")
@@ -43,40 +47,24 @@ public class AuthController {
         return ResponseEntity.ok("Registrazione admin avvenuta con successo");
     }
     @PostMapping("/register-scuola")
-    public ResponseEntity<String> registerScuola(@RequestBody RegisterRequest registerRequest) {
-        appUserService.registerUser(
-                registerRequest.getUsername(),
-                registerRequest.getPassword(),
-                Set.of(Role.ROLE_SCUOLA) // Assegna il ruolo di default
-        );
+    public ResponseEntity<String> registerScuola(@RequestBody ServizioRequest registerRequest) {
+        appUserService.registerScuola(registerRequest);
         return ResponseEntity.ok("Registrazione scuola avvenuta con successo");
     }
     @PreAuthorize("hasRole('ADMIN') or hasRole('SCUOLA')")
     @PostMapping("/register-insegnante")
-    public ResponseEntity<String> registerInsegnante(@RequestBody RegisterRequest registerRequest) {
-        appUserService.registerUser(
-                registerRequest.getUsername(),
-                registerRequest.getPassword(),
-                Set.of(Role.ROLE_INSEGNANTE) // Assegna il ruolo di default
-        );
+    public ResponseEntity<String> registerInsegnante(@RequestBody InsegnanteRequest registerRequest) {
+        appUserService.registerInsegnante(registerRequest);
         return ResponseEntity.ok("Registrazione insegnante avvenuta con successo");
     }
     @PostMapping("/register-gestore-sp")
-    public ResponseEntity<String> registerGestoreSp(@RequestBody RegisterRequest registerRequest) {
-        appUserService.registerUser(
-                registerRequest.getUsername(),
-                registerRequest.getPassword(),
-                Set.of(Role.ROLE_GESTORE_SP) // Assegna il ruolo di default
-        );
+    public ResponseEntity<String> registerGestoreSp(@RequestBody ServizioRequest registerRequest) {
+        appUserService.registerGestoreSala(registerRequest);
         return ResponseEntity.ok("Registrazione avvenuta con successo");
     }
     @PostMapping("/register-organizzatore")
-    public ResponseEntity<String> registerGestore(@RequestBody RegisterRequest registerRequest) {
-        appUserService.registerUser(
-                registerRequest.getUsername(),
-                registerRequest.getPassword(),
-                Set.of(Role.ROLE_GESTORE_SP) // Assegna il ruolo di default
-        );
+    public ResponseEntity<String> registerOrganizzatore(@RequestBody ServizioRequest registerRequest) {
+        appUserService.registerOrganizzatoreEventi(registerRequest);
         return ResponseEntity.ok("Registrazione avvenuta con successo");
     }
     @PostMapping("/login")

@@ -35,7 +35,7 @@ public class AuthRunner implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) throws Exception {
         if (!appUserRepository.existsByRolesContaining(Role.ROLE_ADMIN)) {
-            appUserService.registerUser("admin", passwordEncoder.encode("adminpwd"), Set.of(Role.ROLE_ADMIN));
+            appUserService.registerUser("admin", "adminpwd", Set.of(Role.ROLE_ADMIN));
         }
 
 
@@ -57,7 +57,8 @@ public class AuthRunner implements ApplicationRunner {
                 utente.setDataNascita(dataNascita);
                 utente.setBio(faker.lorem().paragraph());
                 utente.setAvatar("https://ui-avatars.com/api/?name=" + utente.getNome() + "+" + utente.getCognome());
-                utente.setCopertina("XXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+                utente.setCopertina("https://m.media-amazon.com/images/S/pv-target-images/fb3e18571fefeb973850615b530a8c6440fc338e33b00438d52152f38f58fca8._SX1080_FMjpg_.jpg");
+                utente.setDataRegistrazione(LocalDate.now());
                 utente.setAppUser(appUser);
                 utente.setId(appUser.getId());
                 utenteNormaleRepository.save(utente);
