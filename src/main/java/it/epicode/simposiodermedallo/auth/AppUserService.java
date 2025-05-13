@@ -1,5 +1,7 @@
 package it.epicode.simposiodermedallo.auth;
 
+import it.epicode.simposiodermedallo.utenti.Utente;
+import it.epicode.simposiodermedallo.utenti.UtenteRepository;
 import it.epicode.simposiodermedallo.utenti.persone.insegnanti.Insegnante;
 import it.epicode.simposiodermedallo.utenti.persone.insegnanti.InsegnanteRepository;
 import it.epicode.simposiodermedallo.utenti.persone.insegnanti.InsegnanteRequest;
@@ -18,10 +20,12 @@ import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cglib.core.Local;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -61,13 +65,15 @@ public class AppUserService {
     @Autowired
     private OrganizzatoreEventiRepository organizzatoreEventiRepository;
 
+    @Autowired
+    private UtenteRepository utenteRepository;
+
 
 
     public AppUser registerUser(String username, String password, Set<Role> roles) {
         if (appUserRepository.existsByUsername(username)) {
             throw new EntityExistsException("Username già in uso");
         }
-
         AppUser appUser = new AppUser();
         appUser.setUsername(username);
         appUser.setPassword(passwordEncoder.encode(password));

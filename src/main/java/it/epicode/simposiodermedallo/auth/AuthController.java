@@ -1,10 +1,18 @@
 package it.epicode.simposiodermedallo.auth;
 
+import it.epicode.simposiodermedallo.utenti.Utente;
+import it.epicode.simposiodermedallo.utenti.persone.insegnanti.InsegnanteRepository;
 import it.epicode.simposiodermedallo.utenti.persone.insegnanti.InsegnanteRequest;
+import it.epicode.simposiodermedallo.utenti.persone.utentinormali.UtenteNormaleRepository;
 import it.epicode.simposiodermedallo.utenti.persone.utentinormali.UtenteNormaleRequest;
 import it.epicode.simposiodermedallo.utenti.servizi.ServizioRequest;
+import it.epicode.simposiodermedallo.utenti.servizi.gestorisaleprove.GestoreSalaRepository;
+import it.epicode.simposiodermedallo.utenti.servizi.organizzatoreeventi.OrganizzatoreEventiRepository;
+import it.epicode.simposiodermedallo.utenti.servizi.scuole.ScuolaRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -20,14 +28,57 @@ public class AuthController {
 
     private final AppUserService appUserService;
 
+    @Autowired
+    private UtenteNormaleRepository utenteNormaleRepository;
+    @Autowired
+    private InsegnanteRepository insegnanteRepository;
+    @Autowired
+    private ScuolaRepository scuolaRepository;
+    @Autowired
+    private GestoreSalaRepository gestoreSalaRepository;
+    @Autowired
+    private OrganizzatoreEventiRepository organizzatoreEventiRepository;
+
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/current-user")
     public AppUser getCurrentUser(@AuthenticationPrincipal AppUser appUser) {
         return appUser;
     }
 
-    @PreAuthorize("hasRole('USER')")
     @GetMapping("/current-user-complete")
+    public ResponseEntity<?> getCurrentUserComplete(@AuthenticationPrincipal AppUser user) {
+        Long id = user.getId();
+
+        if (utenteNormaleRepository.existsById(id)) {
+            return utenteNormaleRepository.findById(id)
+                    .map(ResponseEntity::ok)
+                    .orElseThrow();
+        }
+
+        if (insegnanteRepository.existsById(id)) {
+            return insegnanteRepository.findById(id)
+                    .map(ResponseEntity::ok)
+                    .orElseThrow();
+        }
+
+        if (scuolaRepository.existsById(id)) {
+            return scuolaRepository.findById(id)
+                    .map(ResponseEntity::ok)
+                    .orElseThrow();
+        }
+        if (gestoreSalaRepository.existsById(id)) {
+            return gestoreSalaRepository.findById(id)
+                    .map(ResponseEntity::ok)
+                    .orElseThrow();
+        }
+        if (organizzatoreEventiRepository.existsById(id)) {
+            return organizzatoreEventiRepository.findById(id)
+                    .map(ResponseEntity::ok)
+                    .orElseThrow();
+        }
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Utente non trovato");
+    }
 
 
 
@@ -75,5 +126,10 @@ public class AuthController {
                 loginRequest.getPassword()
         );
         return ResponseEntity.ok(new AuthResponse(token));
+    }
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/utenti")
+    public ResponseEntity<?> getAllUtenti() {
+        return ResponseEntity.ok(utenteNormaleRepository.findAll());
     }
 }
