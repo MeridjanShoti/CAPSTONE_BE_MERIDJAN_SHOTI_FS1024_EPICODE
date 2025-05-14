@@ -44,11 +44,13 @@ public class AuthController {
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/current-user")
+    @ResponseStatus(HttpStatus.OK)
     public AppUser getCurrentUser(@AuthenticationPrincipal AppUser appUser) {
         return appUser;
     }
 
     @GetMapping("/current-user-complete")
+    @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<?> getCurrentUserComplete(@AuthenticationPrincipal AppUser user) {
         Long id = user.getId();
 
@@ -91,12 +93,14 @@ public class AuthController {
 
 
     @PostMapping("/register")
+    @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<String> register(@RequestBody UtenteNormaleRequest registerRequest) throws MessagingException {
         appUserService.registerUtenteNormale(registerRequest);
         return ResponseEntity.ok("Registrazione utente avvenuta con successo");
     }
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/register-admin")
+    @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<String> registerAdmin(@RequestBody RegisterRequest registerRequest) {
         appUserService.registerUser(
                 registerRequest.getUsername(),
@@ -112,21 +116,25 @@ public class AuthController {
     }
     @PreAuthorize("hasRole('ADMIN') or hasRole('SCUOLA')")
     @PostMapping("/register-insegnante")
+    @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<String> registerInsegnante(@RequestBody InsegnanteRequest registerRequest, @AuthenticationPrincipal AppUser user) throws MessagingException {
         appUserService.registerInsegnante(registerRequest, user);
         return ResponseEntity.ok("Registrazione insegnante avvenuta con successo");
     }
     @PostMapping("/register-gestore-sp")
+    @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<String> registerGestoreSp(@RequestBody ServizioRequest registerRequest) throws MessagingException {
         appUserService.registerGestoreSala(registerRequest);
         return ResponseEntity.ok("Registrazione avvenuta con successo");
     }
     @PostMapping("/register-organizzatore")
+    @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<String> registerOrganizzatore(@RequestBody ServizioRequest registerRequest) {
         appUserService.registerOrganizzatoreEventi(registerRequest);
         return ResponseEntity.ok("Registrazione avvenuta con successo");
     }
     @PostMapping("/login")
+    @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest loginRequest) {
         log.info("Login request:");
         String token = appUserService.authenticateUser(
@@ -138,6 +146,7 @@ public class AuthController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/utenti")
+    @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<?> getAllUtenti() {
         return ResponseEntity.ok(utenteNormaleRepository.findAll());
     }
