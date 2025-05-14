@@ -9,6 +9,7 @@ import it.epicode.simposiodermedallo.utenti.servizi.ServizioRequest;
 import it.epicode.simposiodermedallo.utenti.servizi.gestorisaleprove.GestoreSalaRepository;
 import it.epicode.simposiodermedallo.utenti.servizi.organizzatoreeventi.OrganizzatoreEventiRepository;
 import it.epicode.simposiodermedallo.utenti.servizi.scuole.ScuolaRepository;
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -90,7 +91,7 @@ public class AuthController {
 
 
     @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody UtenteNormaleRequest registerRequest) {
+    public ResponseEntity<String> register(@RequestBody UtenteNormaleRequest registerRequest) throws MessagingException {
         appUserService.registerUtenteNormale(registerRequest);
         return ResponseEntity.ok("Registrazione utente avvenuta con successo");
     }
@@ -105,18 +106,18 @@ public class AuthController {
         return ResponseEntity.ok("Registrazione admin avvenuta con successo");
     }
     @PostMapping("/register-scuola")
-    public ResponseEntity<String> registerScuola(@RequestBody ServizioRequest registerRequest) {
+    public ResponseEntity<String> registerScuola(@RequestBody ServizioRequest registerRequest) throws MessagingException {
         appUserService.registerScuola(registerRequest);
         return ResponseEntity.ok("Registrazione scuola avvenuta con successo");
     }
     @PreAuthorize("hasRole('ADMIN') or hasRole('SCUOLA')")
     @PostMapping("/register-insegnante")
-    public ResponseEntity<String> registerInsegnante(@RequestBody InsegnanteRequest registerRequest) {
-        appUserService.registerInsegnante(registerRequest);
+    public ResponseEntity<String> registerInsegnante(@RequestBody InsegnanteRequest registerRequest, @AuthenticationPrincipal AppUser user) throws MessagingException {
+        appUserService.registerInsegnante(registerRequest, user);
         return ResponseEntity.ok("Registrazione insegnante avvenuta con successo");
     }
     @PostMapping("/register-gestore-sp")
-    public ResponseEntity<String> registerGestoreSp(@RequestBody ServizioRequest registerRequest) {
+    public ResponseEntity<String> registerGestoreSp(@RequestBody ServizioRequest registerRequest) throws MessagingException {
         appUserService.registerGestoreSala(registerRequest);
         return ResponseEntity.ok("Registrazione avvenuta con successo");
     }

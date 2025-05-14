@@ -1,5 +1,6 @@
 package it.epicode.simposiodermedallo.auth;
 
+import it.epicode.simposiodermedallo.common.EmailSenderService;
 import it.epicode.simposiodermedallo.utenti.Utente;
 import it.epicode.simposiodermedallo.utenti.UtenteRepository;
 import it.epicode.simposiodermedallo.utenti.persone.insegnanti.Insegnante;
@@ -16,6 +17,7 @@ import it.epicode.simposiodermedallo.utenti.servizi.organizzatoreeventi.Organizz
 import it.epicode.simposiodermedallo.utenti.servizi.scuole.Scuola;
 import it.epicode.simposiodermedallo.utenti.servizi.scuole.ScuolaRepository;
 import it.epicode.simposiodermedallo.utenti.servizi.scuole.ScuolaService;
+import jakarta.mail.MessagingException;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,6 +70,9 @@ public class AppUserService {
     @Autowired
     private UtenteRepository utenteRepository;
 
+    @Autowired
+    private EmailSenderService emailSenderService;
+
 
 
     public AppUser registerUser(String username, String password, Set<Role> roles) {
@@ -80,7 +85,7 @@ public class AppUserService {
         appUser.setRoles(roles);
         return appUserRepository.save(appUser);
     }
-    public UtenteNormale registerUtenteNormale(UtenteNormaleRequest request) {
+    public UtenteNormale registerUtenteNormale(UtenteNormaleRequest request) throws MessagingException {
         AppUser appUser = registerUser(request.getUsername(), request.getPassword(), Set.of(Role.ROLE_USER));
         UtenteNormale utenteNormale = new UtenteNormale();
 
@@ -97,12 +102,14 @@ public class AppUserService {
         utenteNormale.setCopertina(request.getCopertina());
         utenteNormale.setDataRegistrazione(LocalDate.now());
         utenteNormale.setAppUser(appUser);
-        return utenteNormaleRepository.save(utenteNormale);
+        UtenteNormale utenteSalvato = utenteNormaleRepository.save(utenteNormale);
+        emailSenderService.sendEmail(utenteNormale.getEmail(), "Registrazione Simposio Der Medallo", "Grazie per esserti registrato, ora puoi accedere al tuo account e iniziare a utilizzare i nostri servizi MICIDIALIIIII!!!!!");
+        return utenteSalvato;
     }
     public Optional<AppUser> findByUsername(String username) {
         return appUserRepository.findByUsername(username);
     }
-    public Scuola registerScuola(ServizioRequest request) {
+    public Scuola registerScuola(ServizioRequest request) throws MessagingException {
         AppUser appUser = registerUser(request.getUsername(), request.getPassword(), Set.of(Role.ROLE_SCUOLA));
         Scuola scuola = new Scuola();
 
@@ -128,10 +135,13 @@ public class AppUserService {
         scuola.setPartitaIva(request.getPartitaIva());
         scuola.setDataRegistrazione(LocalDate.now());
         scuola.setAppUser(appUser);
-        return scuolaRepository.save(scuola);
+
+        Scuola scuolaSalvata = scuolaRepository.save(scuola);
+        emailSenderService.sendEmail(scuola.getEmail(), "Registrazione Simposio Der Medallo", "Grazie per averci dato fiducia, ora la tua scuola è pronta per formare nuovi talenti di cui il sommo Maestro sarebbe fiero!");
+        return scuolaSalvata;
     }
 
-    public Insegnante  registerInsegnante(InsegnanteRequest request) {
+    public Insegnante  registerInsegnante(InsegnanteRequest request, AppUser user) throws MessagingException {
         AppUser appUser = registerUser(request.getUsername(), request.getPassword(), Set.of(Role.ROLE_INSEGNANTE));
         Insegnante insegnante = new Insegnante();
 
@@ -147,13 +157,21 @@ public class AppUserService {
         }
         insegnante.setCopertina(request.getCopertina());
         insegnante.setDataRegistrazione(LocalDate.now());
-
-
         insegnante.setAppUser(appUser);
-        return insegnanteRepository.save(insegnante);
+        Set<Role> roles = appUser.getRoles();
+        Scuola scuola = null;
+        if  (roles.contains(Role.ROLE_SCUOLA)) {
+            scuola = scuolaRepository.findById(user.getId()).orElseThrow(() -> new EntityNotFoundException("Scuola non trovata"));
+        } else {
+            scuola = null;
+        }
+        insegnante.setScuola(scuola);
+        Insegnante insegnanteSalvato = insegnanteRepository.save(insegnante);
+        emailSenderService.sendEmail(insegnante.getEmail(), "Registrazione Simposio Der Medallo", "Sei stato registrato dalla tua scuola o da un admin. \nOra ti spetta il compito più bello di tutti: \nfar appassionare i tuoi studenti al proprio strumento, farli divertire e crescere come musicisti!\n i tuoi dati di accesso sono: \nUsername: " + request.getUsername() + "\nPassword: " + request.getPassword());
+        return insegnanteSalvato;
     }
 
-    public GestoreSala registerGestoreSala(ServizioRequest request) {
+    public GestoreSala registerGestoreSala(ServizioRequest request) throws MessagingException {
         AppUser appUser = registerUser(request.getUsername(), request.getPassword(), Set.of(Role.ROLE_GESTORE_SP));
         GestoreSala gestoreSala = new GestoreSala();
 
@@ -179,7 +197,11 @@ public class AppUserService {
         gestoreSala.setPartitaIva(request.getPartitaIva());
         gestoreSala.setDataRegistrazione(LocalDate.now());
         gestoreSala.setAppUser(appUser);
-        return gestoreSalaRepository.save(gestoreSala);
+        GestoreSala gestoreSalaSalvata = gestoreSalaRepository.save(gestoreSala);
+        emailSenderService.sendEmail(gestoreSala.getEmail(), "Registrazione Simposio Der Medallo", "Grazie per esserti registrato. " +
+                "\nOra puoi affittare le tue sale prove ai Vitalij Kuprij, Michael Harris, Randy Coven e John Macaluso del futuro! " +
+                "\nCosa vuoi di più se non LA GUERRA... LA GUERRA PIÙ TOTALEEEEEEE!!!!!!");
+        return gestoreSalaSalvata;
     }
 
     public OrganizzatoreEventi registerOrganizzatoreEventi(ServizioRequest request) {
