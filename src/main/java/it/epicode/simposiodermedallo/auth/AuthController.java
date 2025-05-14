@@ -134,6 +134,7 @@ public class AuthController {
         );
         return ResponseEntity.ok(new AuthResponse(token));
     }
+
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/utenti")
     public ResponseEntity<?> getAllUtenti() {
