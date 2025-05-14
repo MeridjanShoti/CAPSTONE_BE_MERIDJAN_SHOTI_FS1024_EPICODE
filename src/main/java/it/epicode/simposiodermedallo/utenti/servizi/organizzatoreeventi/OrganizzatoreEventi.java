@@ -17,7 +17,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "eventi")
+@Table(name = "organizzatori_eventi")
 public class OrganizzatoreEventi extends Servizio {
     @OneToMany (mappedBy = "organizzatore")
     private List<Evento> eventi;
