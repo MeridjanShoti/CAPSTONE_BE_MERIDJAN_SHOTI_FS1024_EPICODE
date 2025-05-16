@@ -15,24 +15,34 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class CloudinaryController {
     private final Cloudinary cloudinary;
-
     @PostMapping(path="/uploadme", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseStatus(HttpStatus.OK)
-    public String upload(
-            @RequestPart("file")
-            MultipartFile file) {
-
+    public String upload(@RequestPart("file") MultipartFile file) {
         try {
-            Map result = cloudinary.uploader()
-                    .upload(file.getBytes(),  Cloudinary.asMap("folder", "FS1024", "public_id", file.getOriginalFilename()));
-            String url = result.get("secure_url").toString();
-            return url;
+            String originalName = file.getOriginalFilename();
+            String baseName = getFileNameWithoutExtension(originalName)
+                    .replaceAll("[^a-zA-Z0-9\\-_.]", "_");
 
+            Map result = cloudinary.uploader().upload(
+                    file.getBytes(),
+                    Cloudinary.asMap(
+                            "folder", "FS1024",
+                            "public_id", baseName,
+                            "resource_type", "image"
+                    )
+            );
+
+            return result.get("secure_url").toString();
 
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Errore upload Cloudinary: " + e.getMessage(), e);
         }
-
     }
 
-}
+    private String getFileNameWithoutExtension(String filename) {
+        if (filename == null) return "file";
+        int dotIndex = filename.lastIndexOf('.');
+        return (dotIndex != -1) ? filename.substring(0, dotIndex) : filename;
+    }
+
+    }
