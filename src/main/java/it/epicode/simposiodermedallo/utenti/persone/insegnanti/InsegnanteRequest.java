@@ -23,5 +23,4 @@ public class InsegnanteRequest {
     private List<String> strumenti;
     private MultipartFile curriculum;
     private double pagaOraria;
-    private List<Long> corsiId;
 }
