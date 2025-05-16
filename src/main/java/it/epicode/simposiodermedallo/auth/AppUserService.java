@@ -31,7 +31,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -158,6 +161,14 @@ public class AppUserService {
         insegnante.setCopertina(request.getCopertina());
         insegnante.setDataRegistrazione(LocalDate.now());
         insegnante.setAppUser(appUser);
+        MultipartFile curriculumFile = request.getCurriculum();
+        if (curriculumFile != null && !curriculumFile.isEmpty()) {
+            try {
+                insegnante.setCurriculum(curriculumFile.getBytes()); // ✅ salva nel DB
+            } catch (IOException e) {
+                throw new RuntimeException("Errore lettura file curriculum", e);
+            }
+        }
         Set<Role> roles = appUser.getRoles();
         Scuola scuola = null;
         if  (roles.contains(Role.ROLE_SCUOLA)) {

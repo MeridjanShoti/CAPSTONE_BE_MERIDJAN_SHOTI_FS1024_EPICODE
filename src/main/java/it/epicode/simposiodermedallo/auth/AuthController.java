@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -115,9 +116,9 @@ public class AuthController {
         return ResponseEntity.ok("Registrazione scuola avvenuta con successo");
     }
     @PreAuthorize("hasRole('ADMIN') or hasRole('SCUOLA')")
-    @PostMapping("/register-insegnante")
+    @PostMapping(value = "/register-insegnante", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<String> registerInsegnante(@RequestBody InsegnanteRequest registerRequest, @AuthenticationPrincipal AppUser user) throws MessagingException {
+    public ResponseEntity<String> registerInsegnante(@ModelAttribute InsegnanteRequest registerRequest, @AuthenticationPrincipal AppUser user) throws MessagingException {
         appUserService.registerInsegnante(registerRequest, user);
         return ResponseEntity.ok("Registrazione insegnante avvenuta con successo");
     }

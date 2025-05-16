@@ -3,6 +3,7 @@ package it.epicode.simposiodermedallo.utenti.persone.insegnanti;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -20,8 +21,7 @@ public class InsegnanteRequest {
     private String avatar;
     private String copertina;
     private List<String> strumenti;
-    private String curriculum;
+    private MultipartFile curriculum;
     private double pagaOraria;
-    private long scuolaId;
     private List<Long> corsiId;
 }

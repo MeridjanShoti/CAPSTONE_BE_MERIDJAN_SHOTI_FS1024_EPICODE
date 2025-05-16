@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -23,7 +24,8 @@ public class Insegnante extends Persona {
     @OneToMany (mappedBy = "insegnante")
     private List<Corso> corsi;
     @Column(columnDefinition = "TEXT")
-    private String curriculum;
+    @Lob
+    private byte[] curriculum;
     private double pagaOraria;
     @ManyToOne
     private Scuola scuola;
