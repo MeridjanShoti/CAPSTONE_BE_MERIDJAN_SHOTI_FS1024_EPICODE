@@ -44,7 +44,7 @@ public class AuthRunner implements ApplicationRunner {
                 UtenteNormale utente = new UtenteNormale();
                 String nome = faker.name().firstName();
                 String cognome = faker.name().lastName();
-                String email = (nome + cognome + "@gmail.com").toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9]", "");
+                String email = (nome + cognome + "@gmail.com").toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9_@.]", "");
                 LocalDate dataNascita = LocalDate.of(faker.number().numberBetween(1950, 2000), faker.number().numberBetween(1, 12), faker.number().numberBetween(1, 28));
                 String username = (nome + "." + cognome).toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9]", "");
                 AppUser appUser = new AppUser();

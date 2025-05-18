@@ -99,6 +99,13 @@ public class AuthController {
         appUserService.registerUtenteNormale(registerRequest);
         return ResponseEntity.ok("Registrazione utente avvenuta con successo");
     }
+    @PutMapping("/utenti/{id}")
+    @PreAuthorize("isAuthenticated()")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<String> update(@RequestBody UtenteNormaleRequest registerRequest, @AuthenticationPrincipal AppUser user, @PathVariable Long id) {
+        appUserService.updateUtenteNormale(registerRequest, user, id);
+        return ResponseEntity.ok("Modifica utente avvenuta con successo");
+    }
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/register-admin")
     @ResponseStatus(HttpStatus.CREATED)
@@ -120,6 +127,12 @@ public class AuthController {
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<String> registerInsegnante(@ModelAttribute InsegnanteRequest registerRequest, @AuthenticationPrincipal AppUser user) throws MessagingException {
         appUserService.registerInsegnante(registerRequest, user);
+        return ResponseEntity.ok("Registrazione insegnante avvenuta con successo");
+    }
+    @PostMapping(value = "/insegnanti/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<String> updateInsegnante(@ModelAttribute InsegnanteRequest registerRequest, @AuthenticationPrincipal AppUser user, @PathVariable Long id)  {
+        appUserService.updateInsegnante(registerRequest, user, id);
         return ResponseEntity.ok("Registrazione insegnante avvenuta con successo");
     }
     @PostMapping("/register-gestore-sp")

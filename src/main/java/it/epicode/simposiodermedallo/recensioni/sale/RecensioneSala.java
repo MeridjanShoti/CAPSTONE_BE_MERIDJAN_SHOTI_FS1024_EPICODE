@@ -1,29 +1,28 @@
-package it.epicode.simposiodermedallo.recensioni;
+package it.epicode.simposiodermedallo.recensioni.sale;
 
 import it.epicode.simposiodermedallo.utenti.persone.utentinormali.UtenteNormale;
 import it.epicode.simposiodermedallo.utenti.servizi.Servizio;
-import it.epicode.simposiodermedallo.utenti.servizi.organizzatoreeventi.eventi.Evento;
+import it.epicode.simposiodermedallo.utenti.servizi.gestorisaleprove.saleprove.SalaProve;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-
 @Data
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "Recensioni")
+@Table(name = "RecensioniSale")
 
-public class Recensione {
+public class RecensioneSala {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @ManyToOne(optional = false)
     private UtenteNormale autore;
     @ManyToOne(optional = false)
-    private Servizio servizio;
+    private SalaProve sala;
     @Column(columnDefinition = "TEXT")
     private String testo;
     @Column(nullable = false)

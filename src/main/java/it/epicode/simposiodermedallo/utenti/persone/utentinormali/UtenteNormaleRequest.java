@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UtenteNormaleRequest {
+    public class UtenteNormaleRequest {
     private String nome;
     private String cognome;
     private LocalDate dataNascita;
