@@ -26,6 +26,6 @@ public class Scuola extends Servizio {
     @OneToMany (mappedBy = "scuola")
     private List<Corso> corsi;
     @JsonIgnore
-    @OneToMany
+    @OneToMany (mappedBy = "scuola")
     private List<Insegnante> insegnanti;
 }

@@ -1,6 +1,5 @@
 package it.epicode.simposiodermedallo.auth;
 
-import it.epicode.simposiodermedallo.utenti.Utente;
 import it.epicode.simposiodermedallo.utenti.persone.insegnanti.InsegnanteRepository;
 import it.epicode.simposiodermedallo.utenti.persone.insegnanti.InsegnanteRequest;
 import it.epicode.simposiodermedallo.utenti.persone.utentinormali.UtenteNormaleRepository;
@@ -10,6 +9,7 @@ import it.epicode.simposiodermedallo.utenti.servizi.gestorisaleprove.GestoreSala
 import it.epicode.simposiodermedallo.utenti.servizi.organizzatoreeventi.OrganizzatoreEventiRepository;
 import it.epicode.simposiodermedallo.utenti.servizi.scuole.ScuolaRepository;
 import jakarta.mail.MessagingException;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,9 +27,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 @Slf4j
 public class AuthController {
-
     private final AppUserService appUserService;
-
     @Autowired
     private UtenteNormaleRepository utenteNormaleRepository;
     @Autowired
@@ -54,19 +52,16 @@ public class AuthController {
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<?> getCurrentUserComplete(@AuthenticationPrincipal AppUser user) {
         Long id = user.getId();
-
         if (utenteNormaleRepository.existsById(id)) {
             return utenteNormaleRepository.findById(id)
                     .map(ResponseEntity::ok)
                     .orElseThrow();
         }
-
         if (insegnanteRepository.existsById(id)) {
             return insegnanteRepository.findById(id)
                     .map(ResponseEntity::ok)
                     .orElseThrow();
         }
-
         if (scuolaRepository.existsById(id)) {
             return scuolaRepository.findById(id)
                     .map(ResponseEntity::ok)
@@ -91,14 +86,13 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Utente non trovato");
     }
 
-
-
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<String> register(@RequestBody UtenteNormaleRequest registerRequest) throws MessagingException {
+    public ResponseEntity<String> register(@Valid @RequestBody UtenteNormaleRequest registerRequest) throws MessagingException {
         appUserService.registerUtenteNormale(registerRequest);
         return ResponseEntity.ok("Registrazione utente avvenuta con successo");
     }
+
     @PutMapping("/utenti/{id}")
     @PreAuthorize("isAuthenticated()")
     @ResponseStatus(HttpStatus.CREATED)
@@ -106,10 +100,11 @@ public class AuthController {
         appUserService.updateUtenteNormale(registerRequest, user, id);
         return ResponseEntity.ok("Modifica utente avvenuta con successo");
     }
+
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/register-admin")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<String> registerAdmin(@RequestBody RegisterRequest registerRequest) {
+    public ResponseEntity<String> registerAdmin(@Valid @RequestBody RegisterRequest registerRequest) {
         appUserService.registerUser(
                 registerRequest.getUsername(),
                 registerRequest.getPassword(),
@@ -117,39 +112,66 @@ public class AuthController {
         );
         return ResponseEntity.ok("Registrazione admin avvenuta con successo");
     }
+
     @PostMapping("/register-scuola")
-    public ResponseEntity<String> registerScuola(@RequestBody ServizioRequest registerRequest) throws MessagingException {
+    public ResponseEntity<String> registerScuola(@Valid @RequestBody ServizioRequest registerRequest) throws MessagingException {
         appUserService.registerScuola(registerRequest);
         return ResponseEntity.ok("Registrazione scuola avvenuta con successo");
     }
+    @PreAuthorize("isAuthenticated()")
+    @PutMapping("/scuole/{id}")
+    public ResponseEntity<String> updateScuola(@RequestBody ServizioRequest registerRequest, @AuthenticationPrincipal AppUser user, @PathVariable Long id) {
+        appUserService.updateScuola(registerRequest, id, user);
+        return ResponseEntity.ok("Registrazione scuola avvenuta con successo");
+    }
+
     @PreAuthorize("hasRole('ADMIN') or hasRole('SCUOLA')")
     @PostMapping(value = "/register-insegnante", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<String> registerInsegnante(@ModelAttribute InsegnanteRequest registerRequest, @AuthenticationPrincipal AppUser user) throws MessagingException {
+    public ResponseEntity<String> registerInsegnante(@Valid@ModelAttribute InsegnanteRequest registerRequest, @AuthenticationPrincipal AppUser user) throws MessagingException {
         appUserService.registerInsegnante(registerRequest, user);
         return ResponseEntity.ok("Registrazione insegnante avvenuta con successo");
     }
-    @PutMapping (value = "/insegnanti/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+
+    @PutMapping(value = "/insegnanti/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<String> updateInsegnante(@ModelAttribute InsegnanteRequest registerRequest, @AuthenticationPrincipal AppUser user, @PathVariable Long id)  {
+    public ResponseEntity<String> updateInsegnante(@ModelAttribute InsegnanteRequest registerRequest, @AuthenticationPrincipal AppUser user, @PathVariable Long id) {
         appUserService.updateInsegnante(registerRequest, user, id);
-        return ResponseEntity.ok("Registrazione insegnante avvenuta con successo");
+        return ResponseEntity.ok("Modifica insegnante avvenuta con successo");
     }
+
     @PostMapping("/register-gestore-sp")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<String> registerGestoreSp(@RequestBody ServizioRequest registerRequest) throws MessagingException {
+    public ResponseEntity<String> registerGestoreSp(@Valid @RequestBody ServizioRequest registerRequest) throws MessagingException {
         appUserService.registerGestoreSala(registerRequest);
         return ResponseEntity.ok("Registrazione avvenuta con successo");
     }
+
+    @PutMapping("/gestori/{id}")
+    @PreAuthorize("isAuthenticated()")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<String> updateGestoreSp(@RequestBody ServizioRequest registerRequest, @AuthenticationPrincipal AppUser user, @PathVariable Long id) {
+        appUserService.updateGestoreSala(registerRequest, id, user);
+        return ResponseEntity.ok("Modifica gestore avvenutacon successo");
+    }
+
     @PostMapping("/register-organizzatore")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<String> registerOrganizzatore(@RequestBody ServizioRequest registerRequest) {
+    public ResponseEntity<String> registerOrganizzatore(@Valid @RequestBody ServizioRequest registerRequest) throws MessagingException {
         appUserService.registerOrganizzatoreEventi(registerRequest);
         return ResponseEntity.ok("Registrazione avvenuta con successo");
     }
+
+    @PutMapping("/organizzatori/{id}")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<String> registerOrganizzatore(@PathVariable Long id, @RequestBody ServizioRequest registerRequest, @AuthenticationPrincipal AppUser user) {
+        appUserService.updateOrganizzatoreEventi(id, registerRequest, user);
+        return ResponseEntity.ok("Modifica organizzatore avvenuta con successo");
+    }
+
     @PostMapping("/login")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest loginRequest) {
         log.info("Login request:");
         String token = appUserService.authenticateUser(
                 loginRequest.getUsername(),

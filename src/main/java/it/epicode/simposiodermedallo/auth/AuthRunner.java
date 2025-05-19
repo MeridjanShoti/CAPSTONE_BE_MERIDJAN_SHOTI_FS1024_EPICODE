@@ -132,6 +132,7 @@ public class AuthRunner implements ApplicationRunner {
                         insegnante.setScuola(scuola);
                         insegnante.setStrumenti(List.of(faker.music().instrument(), faker.music().instrument(), faker.music().instrument()));
                         insegnanteRepository.save(insegnante);
+                        scuolaRepository.save(scuola);
                     }
 
             }
@@ -144,12 +145,12 @@ public class AuthRunner implements ApplicationRunner {
                 String email = (nomeOrganizzatore + "@email.com").toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9_@.]", "");
                 String username = (nomeOrganizzatore).toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9]", "");
                 appUser.setUsername(username);
-                appUser.setPassword(passwordEncoder.encode("scuolapwd"));
+                appUser.setPassword(passwordEncoder.encode("organizzatorepwd"));
                 appUser.setRoles(Set.of(Role.ROLE_ORGANIZZATORE));
                 organizzatoreEventi.setEmail(email);
                 organizzatoreEventi.setDataRegistrazione(LocalDate.now());
                 organizzatoreEventi.setBio(faker.lorem().paragraph());
-                organizzatoreEventi.setRagioneSociale("Scuola " + nomeOrganizzatore);
+                organizzatoreEventi.setRagioneSociale(nomeOrganizzatore + "Eventi");
                 organizzatoreEventi.setAvatar("https://ui-avatars.com/api/?name=" + organizzatoreEventi.getRagioneSociale().replaceAll("[^a-zA-Z0-9]", "+"));
                 organizzatoreEventi.setCopertina("https://m.media-amazon.com/images/S/pv-target-images/fb3e18571fefeb973850615b530a8c6440fc338e33b00438d52152f38f58fca8._SX1080_FMjpg_.jpg");
                 organizzatoreEventi.setIndirizzoPrincipale(faker.address().streetAddress());
@@ -170,12 +171,12 @@ public class AuthRunner implements ApplicationRunner {
                 String email = (nomeOrganizzatore + "@email.com").toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9_@.]", "");
                 String username = (nomeOrganizzatore).toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9]", "");
                 appUser.setUsername(username);
-                appUser.setPassword(passwordEncoder.encode("scuolapwd"));
+                appUser.setPassword(passwordEncoder.encode("gestorepwd"));
                 appUser.setRoles(Set.of(Role.ROLE_GESTORE_SP));
                 gestoreSala.setEmail(email);
                 gestoreSala.setDataRegistrazione(LocalDate.now());
                 gestoreSala.setBio(faker.lorem().paragraph());
-                gestoreSala.setRagioneSociale("Scuola " + nomeOrganizzatore);
+                gestoreSala.setRagioneSociale("Sala Prove" + nomeOrganizzatore);
                 gestoreSala.setAvatar("https://ui-avatars.com/api/?name=" + gestoreSala.getRagioneSociale().replaceAll("[^a-zA-Z0-9]", "+"));
                 gestoreSala.setCopertina("https://m.media-amazon.com/images/S/pv-target-images/fb3e18571fefeb973850615b530a8c6440fc338e33b00438d52152f38f58fca8._SX1080_FMjpg_.jpg");
                 gestoreSala.setIndirizzoPrincipale(faker.address().streetAddress());
