@@ -1,5 +1,6 @@
 package it.epicode.simposiodermedallo.recensioni.scuole;
 
+import it.epicode.simposiodermedallo.auth.AppUser;
 import it.epicode.simposiodermedallo.utenti.persone.utentinormali.UtenteNormale;
 import it.epicode.simposiodermedallo.utenti.servizi.Servizio;
 import it.epicode.simposiodermedallo.utenti.servizi.scuole.Scuola;
@@ -21,7 +22,7 @@ public class RecensioneScuola {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @ManyToOne(optional = false)
-    private UtenteNormale autore;
+    private AppUser autore;
     @ManyToOne(optional = false)
     private Scuola scuola;
     @Column(columnDefinition = "TEXT")

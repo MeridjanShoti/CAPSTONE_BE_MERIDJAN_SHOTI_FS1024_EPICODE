@@ -31,6 +31,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -41,6 +42,7 @@ import java.util.Optional;
 import java.util.Set;
 
 @Service
+@Validated
 public class AppUserService {
 
     @Autowired
@@ -185,6 +187,7 @@ public class AppUserService {
         insegnante.setDataRegistrazione(LocalDate.now());
         insegnante.setStrumenti(request.getStrumenti());
         insegnante.setAppUser(appUser);
+        insegnante.setPagaOraria(request.getPagaOraria());
         MultipartFile curriculumFile = request.getCurriculum();
         if (curriculumFile != null && !curriculumFile.isEmpty()) {
             try {
@@ -230,12 +233,12 @@ public class AppUserService {
         insegnante.setDataNascita(request.getDataNascita());
         insegnante.setStrumenti(request.getStrumenti());
         insegnante.setBio(request.getBio());
-        if(request.getAvatar() == null){
-            insegnante.setAvatar("https://ui-avatars.com/api/?name=" + insegnante.getNome() + "+" + insegnante.getCognome());
-        } else {
+        if(request.getAvatar() != null){
             insegnante.setAvatar(request.getAvatar());
         }
-        insegnante.setCopertina(request.getCopertina());
+        if (request.getCopertina() != null) {
+            insegnante.setCopertina(request.getCopertina());
+        }
 
         MultipartFile curriculumFile = request.getCurriculum();
         if (curriculumFile != null && !curriculumFile.isEmpty()) {

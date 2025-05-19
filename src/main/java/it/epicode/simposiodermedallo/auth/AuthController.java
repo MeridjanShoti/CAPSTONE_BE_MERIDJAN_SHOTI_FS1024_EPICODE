@@ -129,7 +129,7 @@ public class AuthController {
         appUserService.registerInsegnante(registerRequest, user);
         return ResponseEntity.ok("Registrazione insegnante avvenuta con successo");
     }
-    @PostMapping(value = "/insegnanti/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PutMapping (value = "/insegnanti/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<String> updateInsegnante(@ModelAttribute InsegnanteRequest registerRequest, @AuthenticationPrincipal AppUser user, @PathVariable Long id)  {
         appUserService.updateInsegnante(registerRequest, user, id);

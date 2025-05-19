@@ -1,5 +1,6 @@
 package it.epicode.simposiodermedallo.commenti;
 
+import it.epicode.simposiodermedallo.auth.AppUser;
 import it.epicode.simposiodermedallo.utenti.persone.utentinormali.UtenteNormale;
 import it.epicode.simposiodermedallo.utenti.servizi.organizzatoreeventi.eventi.Evento;
 import jakarta.persistence.*;
@@ -20,7 +21,7 @@ public class Commento {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private  Long id;
     @ManyToOne (optional = false)
-    private UtenteNormale autore;
+    private AppUser autore;
     @ManyToOne (optional = false)
     private Evento evento;
     @Column(columnDefinition = "TEXT", nullable = false)
