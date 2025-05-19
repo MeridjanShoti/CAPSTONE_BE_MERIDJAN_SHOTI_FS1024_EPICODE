@@ -31,6 +31,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -41,6 +42,7 @@ import java.util.Optional;
 import java.util.Set;
 
 @Service
+@Validated
 public class AppUserService {
 
     @Autowired
@@ -109,6 +111,29 @@ public class AppUserService {
         emailSenderService.sendEmail(utenteNormale.getEmail(), "Registrazione Simposio Der Medallo", "Grazie per esserti registrato, ora puoi accedere al tuo account e iniziare a utilizzare i nostri servizi MICIDIALIIIII!!!!!");
         return utenteSalvato;
     }
+    public UtenteNormale updateUtenteNormale(UtenteNormaleRequest request, AppUser user, long id) {
+        if(user.getId() != id){
+            throw new EntityNotFoundException("Non puoi modificare un altro utente");
+        }
+        UtenteNormale utenteNormale = utenteNormaleRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Utente non trovato"));
+        utenteNormale.setNome(request.getNome());
+        utenteNormale.setCognome(request.getCognome());
+        utenteNormale.setEmail(request.getEmail());
+        utenteNormale.setDataNascita(request.getDataNascita());
+        utenteNormale.setBio(request.getBio());
+        utenteNormale.setAvatar(request.getAvatar());
+        utenteNormale.setCopertina(request.getCopertina());
+        if (!request.getUsername().equals(user.getUsername())) {
+            if (appUserRepository.existsByUsername(request.getUsername())) {
+                throw new EntityExistsException("Username già in uso");
+            } else {
+                user.setUsername(request.getUsername());
+            }
+        }
+        appUserRepository.save(user);
+        UtenteNormale utenteSalvato = utenteNormaleRepository.save(utenteNormale);
+        return utenteSalvato;
+    }
     public Optional<AppUser> findByUsername(String username) {
         return appUserRepository.findByUsername(username);
     }
@@ -160,7 +185,9 @@ public class AppUserService {
         }
         insegnante.setCopertina(request.getCopertina());
         insegnante.setDataRegistrazione(LocalDate.now());
+        insegnante.setStrumenti(request.getStrumenti());
         insegnante.setAppUser(appUser);
+        insegnante.setPagaOraria(request.getPagaOraria());
         MultipartFile curriculumFile = request.getCurriculum();
         if (curriculumFile != null && !curriculumFile.isEmpty()) {
             try {
@@ -169,9 +196,10 @@ public class AppUserService {
                 throw new RuntimeException("Errore lettura file curriculum", e);
             }
         }
-        Set<Role> roles = appUser.getRoles();
+        Set<Role> roles = user.getRoles();
         Scuola scuola = null;
-        if  (roles.contains(Role.ROLE_SCUOLA)) {
+        if (roles.contains(Role.ROLE_SCUOLA)) {
+            System.out.println("sono dentro");
             scuola = scuolaRepository.findById(user.getId()).orElseThrow(() -> new EntityNotFoundException("Scuola non trovata"));
         } else {
             scuola = null;
@@ -179,6 +207,53 @@ public class AppUserService {
         insegnante.setScuola(scuola);
         Insegnante insegnanteSalvato = insegnanteRepository.save(insegnante);
         emailSenderService.sendEmail(insegnante.getEmail(), "Registrazione Simposio Der Medallo", "Sei stato registrato dalla tua scuola o da un admin. \nOra ti spetta il compito più bello di tutti: \nfar appassionare i tuoi studenti al proprio strumento, farli divertire e crescere come musicisti!\n i tuoi dati di accesso sono: \nUsername: " + request.getUsername() + "\nPassword: " + request.getPassword());
+        return insegnanteSalvato;
+    }
+    public Insegnante  updateInsegnante(InsegnanteRequest request, AppUser user, long id)  {
+        if (!request.getUsername().equals(user.getUsername())) {
+            if (appUserRepository.existsByUsername(request.getUsername())) {
+                throw new EntityExistsException("Username già in uso");
+            } else {
+                user.setUsername(request.getUsername());
+            }
+        }
+        Set<Role> roles = user.getRoles();
+        if(user.getId() != id && !roles.contains(Role.ROLE_SCUOLA)){
+            throw new IllegalArgumentException("Non puoi modificare un altro utente");
+        }
+        Insegnante insegnante = insegnanteRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Insegnante non trovato"));
+        if (roles.contains(Role.ROLE_SCUOLA)) {
+            if (!insegnante.getScuola().getId().equals(user.getId())) {
+                throw new IllegalArgumentException("Non puoi modificare un insegnante di un'altra scuola");
+            }
+        }
+        insegnante.setNome(request.getNome());
+        insegnante.setCognome(request.getCognome());
+        insegnante.setEmail(request.getEmail());
+        insegnante.setDataNascita(request.getDataNascita());
+        insegnante.setStrumenti(request.getStrumenti());
+        insegnante.setBio(request.getBio());
+        if(request.getAvatar() != null){
+            insegnante.setAvatar(request.getAvatar());
+        }
+        if (request.getCopertina() != null) {
+            insegnante.setCopertina(request.getCopertina());
+        }
+
+        MultipartFile curriculumFile = request.getCurriculum();
+        if (curriculumFile != null && !curriculumFile.isEmpty()) {
+            try {
+                insegnante.setCurriculum(curriculumFile.getBytes()); // ✅ salva nel DB
+            } catch (IOException e) {
+                throw new RuntimeException("Errore lettura file curriculum", e);
+            }
+        }
+
+
+
+        appUserRepository.save(user);
+        Insegnante insegnanteSalvato = insegnanteRepository.save(insegnante);
+
         return insegnanteSalvato;
     }
 
