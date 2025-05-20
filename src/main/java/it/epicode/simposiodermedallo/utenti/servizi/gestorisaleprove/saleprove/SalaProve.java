@@ -24,6 +24,7 @@ public class SalaProve {
     @ManyToOne
     private GestoreSala gestoreSala;
     private String indirizzoSala;
+    private String citta;
     private String nomeSala;
     private int capienzaMax;
     private double prezzoOrario;
@@ -34,5 +35,7 @@ public class SalaProve {
     private String regolamento;
     @OneToMany
     private List<PrenotazioneSalaProve> prenotazioni;
+    @Embedded
+    private Strumentazione strumentazione;
 
 }

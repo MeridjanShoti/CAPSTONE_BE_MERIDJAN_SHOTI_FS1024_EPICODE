@@ -1,5 +1,6 @@
 package it.epicode.simposiodermedallo.utenti.servizi.gestorisaleprove.saleprove;
 
+import jakarta.persistence.Embeddable;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -12,10 +13,8 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Embeddable
 public class Strumentazione {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
     private List<String> ampliETestate;
     private List<String> microfoni;
     private List<String> mixer;
