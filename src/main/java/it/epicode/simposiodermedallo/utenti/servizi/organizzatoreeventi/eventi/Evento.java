@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 @Data
@@ -21,10 +22,15 @@ public class Evento {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
+    @Column(nullable = false)
     private String nomeEvento;
+    @Column(nullable = false)
     private int maxPartecipanti;
+    @Column(nullable = false)
     private int minPartecipanti;
+    @Column(nullable = false)
     private LocalDate dataEvento;
+    private String locandina;
     @Column(columnDefinition = "TEXT")
     private String note;
     @ManyToMany
@@ -32,10 +38,12 @@ public class Evento {
     private List<String> fotoEvento;
     @ManyToOne
     private OrganizzatoreEventi organizzatore;
-    private LocalDateTime aperturaPorte;
-    private LocalDateTime fineEvento;
+    private LocalTime aperturaPorte;
+    private LocalTime fineEvento;
     private List<String> artistiPartecipanti;
     private String luogo;
+    private String citta;
+    @Enumerated(EnumType.STRING)
     private TipoEvento tipoEvento;
     private double prezzoBiglietto;
 }

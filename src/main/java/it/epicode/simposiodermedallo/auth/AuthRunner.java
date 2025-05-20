@@ -64,7 +64,7 @@ public class AuthRunner implements ApplicationRunner {
                 String cognome = faker.name().lastName();
                 String email = (nome + cognome + "@email.com").toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9_@.]", "");
                 LocalDate dataNascita = LocalDate.of(faker.number().numberBetween(1950, 2000), faker.number().numberBetween(1, 12), faker.number().numberBetween(1, 28));
-                String username = (nome + "." + cognome).toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9]", "");
+                String username = (nome + "." + cognome + faker.number().digits(2)).toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9]", "");
                 AppUser appUser = new AppUser();
                 appUser.setUsername(username);
                 appUser.setPassword(passwordEncoder.encode("userpwd"));
@@ -89,7 +89,7 @@ public class AuthRunner implements ApplicationRunner {
                 AppUser appUser = new AppUser();
                 String nomeScuola = faker.funnyName().name();
                 String email = (nomeScuola + "@email.com").toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9_@.]", "");
-                String username = (nomeScuola).toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9]", "");
+                String username = (nomeScuola + faker.number().digits(2)).toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9]", "");
                 appUser.setUsername(username);
                 appUser.setPassword(passwordEncoder.encode("scuolapwd"));
                 appUser.setRoles(Set.of(Role.ROLE_SCUOLA));
@@ -113,7 +113,7 @@ public class AuthRunner implements ApplicationRunner {
                         String cognome = faker.name().lastName();
                         String emailInsegnante = (nome + cognome + "@email.com").toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9_@.]", "");
                         LocalDate dataNascita = LocalDate.of(faker.number().numberBetween(1950, 2000), faker.number().numberBetween(1, 12), faker.number().numberBetween(1, 28));
-                        String usernameInsegnante = (nome + "." + cognome).toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9]", "");
+                        String usernameInsegnante = (nome + "." + cognome + faker.number().digits(2)).toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9]", "");
                         AppUser appUserInsegnante = new AppUser();
                         appUserInsegnante.setUsername(usernameInsegnante);
                         appUserInsegnante.setPassword(passwordEncoder.encode("insegnantepwd"));
@@ -143,14 +143,14 @@ public class AuthRunner implements ApplicationRunner {
                 AppUser appUser = new AppUser();
                 String nomeOrganizzatore = faker.funnyName().name();
                 String email = (nomeOrganizzatore + "@email.com").toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9_@.]", "");
-                String username = (nomeOrganizzatore).toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9]", "");
+                String username = (nomeOrganizzatore + faker.number().digits(2)).toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9]", "");
                 appUser.setUsername(username);
                 appUser.setPassword(passwordEncoder.encode("organizzatorepwd"));
                 appUser.setRoles(Set.of(Role.ROLE_ORGANIZZATORE));
                 organizzatoreEventi.setEmail(email);
                 organizzatoreEventi.setDataRegistrazione(LocalDate.now());
                 organizzatoreEventi.setBio(faker.lorem().paragraph());
-                organizzatoreEventi.setRagioneSociale(nomeOrganizzatore + "Eventi");
+                organizzatoreEventi.setRagioneSociale(nomeOrganizzatore + " Eventi");
                 organizzatoreEventi.setAvatar("https://ui-avatars.com/api/?name=" + organizzatoreEventi.getRagioneSociale().replaceAll("[^a-zA-Z0-9]", "+"));
                 organizzatoreEventi.setCopertina("https://m.media-amazon.com/images/S/pv-target-images/fb3e18571fefeb973850615b530a8c6440fc338e33b00438d52152f38f58fca8._SX1080_FMjpg_.jpg");
                 organizzatoreEventi.setIndirizzoPrincipale(faker.address().streetAddress());
@@ -167,16 +167,16 @@ public class AuthRunner implements ApplicationRunner {
             for (int i = 0; i < 10; i++) {
                 GestoreSala gestoreSala = new GestoreSala();
                 AppUser appUser = new AppUser();
-                String nomeOrganizzatore = faker.funnyName().name();
-                String email = (nomeOrganizzatore + "@email.com").toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9_@.]", "");
-                String username = (nomeOrganizzatore).toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9]", "");
+                String nomeGestore = faker.funnyName().name();
+                String email = (nomeGestore + "@email.com").toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9_@.]", "");
+                String username = (nomeGestore + faker.number().digits(2)).toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9]", "");
                 appUser.setUsername(username);
                 appUser.setPassword(passwordEncoder.encode("gestorepwd"));
                 appUser.setRoles(Set.of(Role.ROLE_GESTORE_SP));
                 gestoreSala.setEmail(email);
                 gestoreSala.setDataRegistrazione(LocalDate.now());
                 gestoreSala.setBio(faker.lorem().paragraph());
-                gestoreSala.setRagioneSociale("Sala Prove" + nomeOrganizzatore);
+                gestoreSala.setRagioneSociale("Sala Prove" + nomeGestore);
                 gestoreSala.setAvatar("https://ui-avatars.com/api/?name=" + gestoreSala.getRagioneSociale().replaceAll("[^a-zA-Z0-9]", "+"));
                 gestoreSala.setCopertina("https://m.media-amazon.com/images/S/pv-target-images/fb3e18571fefeb973850615b530a8c6440fc338e33b00438d52152f38f58fca8._SX1080_FMjpg_.jpg");
                 gestoreSala.setIndirizzoPrincipale(faker.address().streetAddress());
