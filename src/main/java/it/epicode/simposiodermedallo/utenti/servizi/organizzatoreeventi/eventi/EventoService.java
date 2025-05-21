@@ -80,4 +80,8 @@ public class EventoService {
         }
         return new CommonResponse(id);
     }
+    public Page<Evento> getEventiByOrganizzatore(AppUser user, int page, int size, String sort) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sort));
+        return eventoRepository.findByOrganizzatoreId(user.getId(), pageable);
+    }
 }

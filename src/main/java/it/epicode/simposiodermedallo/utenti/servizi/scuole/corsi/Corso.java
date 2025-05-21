@@ -1,5 +1,6 @@
 package it.epicode.simposiodermedallo.utenti.servizi.scuole.corsi;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import it.epicode.simposiodermedallo.utenti.persone.insegnanti.Insegnante;
 import it.epicode.simposiodermedallo.utenti.persone.utentinormali.UtenteNormale;
 import it.epicode.simposiodermedallo.utenti.servizi.scuole.Scuola;
@@ -24,12 +25,16 @@ public class Corso {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
     private String nomeCorso;
+    @ElementCollection
     private List<String> strumenti;
     @ManyToOne
+    @JsonIgnoreProperties({"corsiInsegnati"})
     private Insegnante insegnante;
     @ManyToOne
+    @JsonIgnoreProperties({"corsi"})
     private Scuola scuola;
     @ManyToMany
+    @JsonIgnoreProperties({"corsi"})
     private List<UtenteNormale> partecipanti;
     private int maxPartecipanti;
     private int minPartecipanti;

@@ -1,5 +1,6 @@
 package it.epicode.simposiodermedallo.utenti.servizi.organizzatoreeventi;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import it.epicode.simposiodermedallo.utenti.servizi.Servizio;
 import it.epicode.simposiodermedallo.utenti.servizi.organizzatoreeventi.eventi.Evento;
 import jakarta.persistence.Entity;
@@ -20,5 +21,6 @@ import java.util.List;
 @Table(name = "organizzatori_eventi")
 public class OrganizzatoreEventi extends Servizio {
     @OneToMany (mappedBy = "organizzatore")
+    @JsonIgnoreProperties({"organizzatore"})
     private List<Evento> eventi;
 }

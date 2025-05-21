@@ -1,5 +1,7 @@
 package it.epicode.simposiodermedallo.utenti.servizi.organizzatoreeventi.eventi;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import it.epicode.simposiodermedallo.utenti.persone.utentinormali.UtenteNormale;
 import it.epicode.simposiodermedallo.utenti.servizi.organizzatoreeventi.OrganizzatoreEventi;
 import jakarta.persistence.*;
@@ -34,9 +36,12 @@ public class Evento {
     @Column(columnDefinition = "TEXT")
     private String note;
     @ManyToMany
+    @JsonIgnoreProperties("eventi")
     private List<UtenteNormale> partecipanti;
+    @Column(columnDefinition = "TEXT")
     private List<String> fotoEvento;
     @ManyToOne
+    @JsonIgnoreProperties("eventi")
     private OrganizzatoreEventi organizzatore;
     private LocalTime aperturaPorte;
     private LocalTime fineEvento;

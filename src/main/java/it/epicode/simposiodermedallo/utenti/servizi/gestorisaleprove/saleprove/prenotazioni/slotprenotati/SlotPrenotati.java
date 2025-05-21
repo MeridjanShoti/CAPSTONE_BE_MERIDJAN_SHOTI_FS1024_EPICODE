@@ -1,5 +1,6 @@
 package it.epicode.simposiodermedallo.utenti.servizi.gestorisaleprove.saleprove.prenotazioni.slotprenotati;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import it.epicode.simposiodermedallo.utenti.servizi.gestorisaleprove.saleprove.SalaProve;
 import it.epicode.simposiodermedallo.utenti.servizi.gestorisaleprove.saleprove.prenotazioni.PrenotazioneSalaProve;
 import jakarta.persistence.*;
@@ -20,5 +21,6 @@ public class SlotPrenotati {
     private LocalDateTime inizio;
     private LocalDateTime fine;
     @ManyToOne
+    @JsonIgnoreProperties({"slotPrenotati"})
     private SalaProve salaProve;
 }

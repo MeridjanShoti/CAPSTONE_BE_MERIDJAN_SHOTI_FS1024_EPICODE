@@ -1,5 +1,6 @@
 package it.epicode.simposiodermedallo.utenti;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import it.epicode.simposiodermedallo.auth.AppUser;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

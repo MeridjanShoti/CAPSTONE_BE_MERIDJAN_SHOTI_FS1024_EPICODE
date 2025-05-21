@@ -1,5 +1,6 @@
 package it.epicode.simposiodermedallo.utenti.servizi.organizzatoreeventi.eventi.prenotazioni;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import it.epicode.simposiodermedallo.utenti.persone.utentinormali.UtenteNormale;
 import it.epicode.simposiodermedallo.utenti.servizi.organizzatoreeventi.eventi.Evento;
 import jakarta.persistence.*;
@@ -17,8 +18,10 @@ public class PrenotazioneEvento {
     @GeneratedValue (strategy = GenerationType.IDENTITY)
     private Long id;
     @ManyToOne
+    @JsonIgnoreProperties({"prenotazioniEventi"})
     private UtenteNormale utenteNormale;
     @ManyToOne
+    @JsonIgnoreProperties({"prenotazioniEventi"})
     private Evento evento;
     private int numeroBiglietti;
 }
