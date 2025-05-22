@@ -8,6 +8,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -24,7 +26,12 @@ public class PrenotazioneEvento {
     @JsonIgnoreProperties({"prenotazioniEventi"})
     private Evento evento;
     private int numeroBiglietti;
-    @GeneratedValue (strategy = GenerationType.UUID)
     private String codicePrenotazione;
     private double prezzoPagato;
+    @PrePersist
+    public void assegnaCodicePrenotazione() {
+        if (this.codicePrenotazione == null) {
+            this.codicePrenotazione = UUID.randomUUID().toString();
+        }
+    }
 }
