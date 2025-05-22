@@ -10,6 +10,9 @@ import it.epicode.simposiodermedallo.utenti.servizi.gestorisaleprove.GestoreSala
 import it.epicode.simposiodermedallo.utenti.servizi.gestorisaleprove.GestoreSalaRepository;
 import it.epicode.simposiodermedallo.utenti.servizi.organizzatoreeventi.OrganizzatoreEventi;
 import it.epicode.simposiodermedallo.utenti.servizi.organizzatoreeventi.OrganizzatoreEventiRepository;
+import it.epicode.simposiodermedallo.utenti.servizi.organizzatoreeventi.eventi.Evento;
+import it.epicode.simposiodermedallo.utenti.servizi.organizzatoreeventi.eventi.EventoRepository;
+import it.epicode.simposiodermedallo.utenti.servizi.organizzatoreeventi.eventi.TipoEvento;
 import it.epicode.simposiodermedallo.utenti.servizi.scuole.Scuola;
 import it.epicode.simposiodermedallo.utenti.servizi.scuole.ScuolaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +23,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -43,6 +47,8 @@ public class AuthRunner implements ApplicationRunner {
     GestoreSalaRepository gestoreSalaRepository;
     @Autowired
     OrganizzatoreEventiRepository organizzatoreEventiRepository;
+    @Autowired
+    EventoRepository eventoRepository;
     @Autowired
     Faker faker;
 
@@ -161,6 +167,25 @@ public class AuthRunner implements ApplicationRunner {
                 organizzatoreEventi.setAppUser(appUser);
                 organizzatoreEventi.setId(appUser.getId());
                 organizzatoreEventiRepository.save(organizzatoreEventi);
+                for (int j = 0; j < 20; j++) {
+                    Evento evento = new Evento();
+                    evento.setNomeEvento(faker.funnyName().name() + faker.music().genre());
+                    evento.setMaxPartecipanti(faker.number().numberBetween(50, 1000));
+                    evento.setMinPartecipanti(faker.number().numberBetween(1, 10));
+                    evento.setDataEvento(LocalDate.of(faker.number().numberBetween(2025, 2026), faker.number().numberBetween(1, 12), faker.number().numberBetween(1, 28)));
+                    evento.setNote(faker.lorem().paragraph());
+                    evento.setArtistiPartecipanti(List.of(faker.name().fullName(), faker.name().username(), faker.dragonBall().character()));
+                    evento.setLuogo(faker.address().streetAddress());
+                    evento.setCitta(faker.address().city());
+                    evento.setTipoEvento(faker.options().option(TipoEvento.values()));
+                    evento.setPrezzoBiglietto(faker.number().numberBetween(10, 30));
+                    evento.setAperturaPorte(LocalTime.of(faker.number().numberBetween(9, 22), faker.number().numberBetween(0, 59)));
+                    evento.setFineEvento(LocalTime.of(faker.number().numberBetween(0, 23), faker.number().numberBetween(0, 59)));
+                    evento.setLocandina("https://edit.org/img/blog/2019060514-cool-retro-concert-poster.webp");
+                    evento.setOrganizzatore(organizzatoreEventi);
+                    eventoRepository.save(evento);
+                    organizzatoreEventiRepository.save(organizzatoreEventi);
+                }
             }
         }
         if (!appUserRepository.existsByRolesContaining(Role.ROLE_GESTORE_SP)) {
