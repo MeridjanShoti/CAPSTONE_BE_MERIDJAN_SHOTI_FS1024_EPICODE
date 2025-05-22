@@ -45,6 +45,7 @@ public class Evento {
     private OrganizzatoreEventi organizzatore;
     private LocalTime aperturaPorte;
     private LocalTime fineEvento;
+    @ElementCollection
     private List<String> artistiPartecipanti;
     private String luogo;
     private String citta;

@@ -9,6 +9,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+
 @RestController
 @RequestMapping("/eventi")
 public class EventoController {
@@ -38,8 +40,16 @@ public class EventoController {
     }
     @GetMapping("/")
     @PreAuthorize("isAuthenticated()")
-    public Page<Evento> getEventi(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size, @RequestParam(defaultValue = "data") String sort, @AuthenticationPrincipal AppUser user) {
-        return eventoService.getEventi( page, size, sort);
+    public Page<Evento> getEventi(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size, @RequestParam(defaultValue = "data") String sort, @AuthenticationPrincipal AppUser user, @RequestParam(required = false) String citta, @RequestParam(required = false) TipoEvento tipoEvento, @RequestParam(required = false) String nomeParziale, @RequestParam(required = false) LocalDate data1, @RequestParam(required = false) LocalDate data2, @RequestParam(required = false) String artista, @RequestParam(required = false) Boolean soloFuturi) {
+        EventoFilter filter = new EventoFilter();
+        filter.setCitta( citta);
+        filter.setTipoEvento( tipoEvento);
+        filter.setNomeParziale( nomeParziale);
+        filter.setData1( data1);
+        filter.setData2( data2);
+        filter.setArtista( artista);
+        filter.setSoloFuturi( soloFuturi);
+        return eventoService.getEventi( page, size, sort, filter);
     }
     @GetMapping("/my-events")
     @PreAuthorize("isAuthenticated()")

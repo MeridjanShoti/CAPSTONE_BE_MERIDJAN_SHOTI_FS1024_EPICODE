@@ -15,9 +15,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -31,6 +33,9 @@ public class EventoService {
     private EmailSenderService emailSenderService;
 
     public Evento creaEvento(EventoRequest eventoRequest, AppUser user) {
+        if (eventoRequest.getDataEvento().isBefore(LocalDate.now())) {
+            throw new IllegalArgumentException("Non puoi creare un evento in una data passata");
+        }
         Evento evento = new Evento();
         OrganizzatoreEventi organizzatore = organizzatoreEventiRepository.findById(user.getId()).orElseThrow(() -> new EntityNotFoundException("Organizzatore non trovato"));
         BeanUtils.copyProperties(eventoRequest, evento);
@@ -43,6 +48,7 @@ public class EventoService {
         if (!evento.getOrganizzatore().equals(organizzatore) && !user.getRoles().contains(Role.ROLE_ADMIN)) {
             throw new IllegalArgumentException("Non sei autorizzato a modificare questo evento");
         }
+
         evento.setNomeEvento(eventoRequest.getNomeEvento());
         evento.setMaxPartecipanti(eventoRequest.getMaxPartecipanti());
         evento.setMinPartecipanti(eventoRequest.getMinPartecipanti());
@@ -69,14 +75,17 @@ public class EventoService {
     public Evento getEvento(Long id) {
         return eventoRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Evento non trovato"));
     }
-    public Page<Evento> getEventi( int page, int size, String sort) {
+    public Page<Evento> getEventi( int page, int size, String sort, EventoFilter filter) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(sort));
-        return eventoRepository.findAll(pageable);
+        Specification<Evento> spec = EventoSpecifications.filterBy(filter);
+        return eventoRepository.findAll(spec, pageable);
     }
     public CommonResponse deleteEvento(Long id, AppUser user) {
         Evento evento = eventoRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Evento non trovato"));
         if (evento.getOrganizzatore().getId().equals(user.getId())) {
             eventoRepository.deleteById(id);
+        } else {
+            throw new IllegalArgumentException("Non sei autorizzato a eliminare questo evento");
         }
         return new CommonResponse(id);
     }
