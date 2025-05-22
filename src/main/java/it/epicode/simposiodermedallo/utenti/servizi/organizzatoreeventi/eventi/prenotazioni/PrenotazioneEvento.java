@@ -24,4 +24,7 @@ public class PrenotazioneEvento {
     @JsonIgnoreProperties({"prenotazioniEventi"})
     private Evento evento;
     private int numeroBiglietti;
+    @GeneratedValue (strategy = GenerationType.UUID)
+    private String codicePrenotazione;
+    private double prezzoPagato;
 }

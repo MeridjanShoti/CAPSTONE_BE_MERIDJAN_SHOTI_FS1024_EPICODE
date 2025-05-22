@@ -5,8 +5,11 @@ import it.epicode.simposiodermedallo.auth.Role;
 import it.epicode.simposiodermedallo.common.CommonResponse;
 import it.epicode.simposiodermedallo.common.EmailSenderService;
 import it.epicode.simposiodermedallo.utenti.persone.utentinormali.UtenteNormale;
+import it.epicode.simposiodermedallo.utenti.persone.utentinormali.UtenteNormaleRepository;
 import it.epicode.simposiodermedallo.utenti.servizi.organizzatoreeventi.OrganizzatoreEventi;
 import it.epicode.simposiodermedallo.utenti.servizi.organizzatoreeventi.OrganizzatoreEventiRepository;
+import it.epicode.simposiodermedallo.utenti.servizi.organizzatoreeventi.eventi.prenotazioni.PrenotazioneEventoRepository;
+import it.epicode.simposiodermedallo.utenti.servizi.organizzatoreeventi.eventi.prenotazioni.PrenotazioneService;
 import jakarta.mail.MessagingException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.BeanUtils;
@@ -31,6 +34,10 @@ public class EventoService {
     private EventoRepository eventoRepository;
     @Autowired
     private EmailSenderService emailSenderService;
+    @Autowired
+    private PrenotazioneEventoRepository prenotazioneEventoRepository;
+    @Autowired
+    private UtenteNormaleRepository utenteNormaleRepository;
 
     public Evento creaEvento(EventoRequest eventoRequest, AppUser user) {
         if (eventoRequest.getDataEvento().isBefore(LocalDate.now())) {
@@ -44,6 +51,7 @@ public class EventoService {
     }
     public Evento modificaEvento(Long id, EventoRequest eventoRequest, AppUser user) throws MessagingException {
         Evento evento = eventoRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Evento non trovato"));
+        String nomeEvento = evento.getNomeEvento();
         OrganizzatoreEventi organizzatore = organizzatoreEventiRepository.findById(user.getId()).orElseThrow(() -> new EntityNotFoundException("Organizzatore non trovato"));
         if (!evento.getOrganizzatore().equals(organizzatore) && !user.getRoles().contains(Role.ROLE_ADMIN)) {
             throw new IllegalArgumentException("Non sei autorizzato a modificare questo evento");
@@ -67,7 +75,7 @@ public class EventoService {
         List<UtenteNormale> partecipanti = evento.getPartecipanti();
         if (partecipanti.size() > 0) {
             for (UtenteNormale partecipante : partecipanti) {
-                emailSenderService.sendEmail(partecipante.getEmail(), "Evento modificato", "L'evento " + evento.getNomeEvento() + " è stato modificato. Ti invitiamo a controllare in piattaforma.");
+                emailSenderService.sendEmail(partecipante.getEmail(), "Evento modificato", "L'evento " + nomeEvento + " è stato modificato. Ti invitiamo a controllare in piattaforma.");
         }
         }
         return eventoRepository.save(evento);
@@ -82,8 +90,20 @@ public class EventoService {
     }
     public CommonResponse deleteEvento(Long id, AppUser user) {
         Evento evento = eventoRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Evento non trovato"));
+        Evento datiEvento = new Evento();
+        String nomeEvento = evento.getNomeEvento();
+        List<UtenteNormale> partecipanti = evento.getPartecipanti();
         if (evento.getOrganizzatore().getId().equals(user.getId())) {
             eventoRepository.deleteById(id);
+            prenotazioneEventoRepository.findAllByEventoId(id).forEach(prenotazioneEvento -> prenotazioneEventoRepository.deleteById(prenotazioneEvento.getId()));
+            partecipanti.forEach(partecipante -> {
+                utenteNormaleRepository.save(partecipante);
+                try {
+                    emailSenderService.sendEmail(partecipante.getEmail(), "Evento cancellato", "L'evento " + nomeEvento + " è stato cancellato. Ti invitiamo a controllare in piattaforma. Sarai risarcito sul metodo di pagamento utilizzato durante la prenotazione");
+                } catch (MessagingException e) {
+                    throw new RuntimeException(e);
+                }
+            });
         } else {
             throw new IllegalArgumentException("Non sei autorizzato a eliminare questo evento");
         }

@@ -15,30 +15,30 @@ public class CommentoController {
     private CommentoRepository commentoRepository;
     @Autowired
     private CommentoService commentoService;
-    @PostMapping("")
+    @PostMapping("/{eventoId}")
     @PreAuthorize("isAuthenticated()")
-    public Commento createCommento(CommentoRequest commentoRequest, Long eventoId, @AuthenticationPrincipal AppUser user) {
+    public Commento createCommento(@RequestBody CommentoRequest commentoRequest, @PathVariable Long eventoId, @AuthenticationPrincipal AppUser user) {
         return commentoService.save(eventoId, commentoRequest, user);
     }
     @PutMapping("/{id}")
     @PreAuthorize("isAuthenticated()")
-    public Commento updateCommento(CommentoRequest commentoRequest, Long id, @AuthenticationPrincipal AppUser user) {
+    public Commento updateCommento(@RequestBody CommentoRequest commentoRequest, @PathVariable Long id, @AuthenticationPrincipal AppUser user) {
         return commentoService.update(id, commentoRequest, user);
     }
     @DeleteMapping("/{id}")
     @PreAuthorize("isAuthenticated()")
-    public CommonResponse deleteCommento(Long id, @AuthenticationPrincipal AppUser user) {
+    public CommonResponse deleteCommento(@PathVariable Long id, @AuthenticationPrincipal AppUser user) {
         return commentoService.delete(id, user);
     }
     @GetMapping("/{id}")
     @PreAuthorize("isAuthenticated()")
-    public Commento getCommento(Long id) {
+    public Commento getCommento(@PathVariable Long id) {
         return commentoService.getById(id);
     }
     @GetMapping("/eventi/{id}")
     @PreAuthorize("isAuthenticated()")
-        public Page<Commento> getAllByEvento(Long id, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size, @RequestParam(defaultValue = "id") String sort) {
-        return commentoService.getAllByEvento(id, page, size, sort);
+        public Page<Commento> getAllByEvento(@PathVariable Long id, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size, @RequestParam(defaultValue = "id") String sort, @RequestParam(defaultValue = "asc") String sortDir) {
+        return commentoService.getAllByEvento(id, page, size, sort, sortDir);
     }
 
 }
