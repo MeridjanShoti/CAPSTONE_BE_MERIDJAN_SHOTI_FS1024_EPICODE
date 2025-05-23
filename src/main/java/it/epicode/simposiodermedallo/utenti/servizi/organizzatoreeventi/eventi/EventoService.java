@@ -12,6 +12,7 @@ import it.epicode.simposiodermedallo.utenti.servizi.organizzatoreeventi.eventi.p
 import it.epicode.simposiodermedallo.utenti.servizi.organizzatoreeventi.eventi.prenotazioni.PrenotazioneService;
 import jakarta.mail.MessagingException;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -20,6 +21,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import java.time.LocalDate;
@@ -27,6 +29,7 @@ import java.util.List;
 
 @Service
 @Validated
+@Slf4j
 public class EventoService {
     @Autowired
     private OrganizzatoreEventiRepository organizzatoreEventiRepository;
@@ -49,8 +52,10 @@ public class EventoService {
         evento.setOrganizzatore(organizzatore);
         return eventoRepository.save(evento);
     }
+    @Transactional
     public Evento modificaEvento(Long id, EventoRequest eventoRequest, AppUser user) throws MessagingException {
-        Evento evento = eventoRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Evento non trovato"));
+        Evento evento = eventoRepository.findByIdWithPartecipanti(id)
+                .orElseThrow(() -> new EntityNotFoundException("Evento non trovato"));
         String nomeEvento = evento.getNomeEvento();
         OrganizzatoreEventi organizzatore = organizzatoreEventiRepository.findById(user.getId()).orElseThrow(() -> new EntityNotFoundException("Organizzatore non trovato"));
         if (!evento.getOrganizzatore().equals(organizzatore) && !user.getRoles().contains(Role.ROLE_ADMIN)) {
@@ -88,25 +93,30 @@ public class EventoService {
         Specification<Evento> spec = EventoSpecifications.filterBy(filter);
         return eventoRepository.findAll(spec, pageable);
     }
+    @Transactional
     public CommonResponse deleteEvento(Long id, AppUser user) {
-        Evento evento = eventoRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Evento non trovato"));
+        Evento evento = eventoRepository.findByIdWithPartecipanti(id)
+                .orElseThrow(() -> new EntityNotFoundException("Evento non trovato"));
         Evento datiEvento = new Evento();
         String nomeEvento = evento.getNomeEvento();
         List<UtenteNormale> partecipanti = evento.getPartecipanti();
-        if (evento.getOrganizzatore().getId().equals(user.getId())) {
+        if (!evento.getOrganizzatore().getId().equals(user.getId())){
+            throw new IllegalArgumentException("Non sei autorizzato a eliminare questo evento");
+        }
             eventoRepository.deleteById(id);
+
             prenotazioneEventoRepository.findAllByEventoId(id).forEach(prenotazioneEvento -> prenotazioneEventoRepository.deleteById(prenotazioneEvento.getId()));
+        if(partecipanti != null && !partecipanti.isEmpty()){
             partecipanti.forEach(partecipante -> {
                 utenteNormaleRepository.save(partecipante);
                 try {
                     emailSenderService.sendEmail(partecipante.getEmail(), "Evento cancellato", "L'evento " + nomeEvento + " è stato cancellato. Ti invitiamo a controllare in piattaforma. Sarai risarcito sul metodo di pagamento utilizzato durante la prenotazione");
                 } catch (MessagingException e) {
-                    throw new RuntimeException(e);
+                    log.error("Errore durante l'invio dell'email a {} per l'evento {}", partecipante.getEmail(), nomeEvento, e);
                 }
             });
-        } else {
-            throw new IllegalArgumentException("Non sei autorizzato a eliminare questo evento");
         }
+
         return new CommonResponse(id);
     }
     public Page<Evento> getEventiByOrganizzatore(AppUser user, int page, int size, String sort) {
