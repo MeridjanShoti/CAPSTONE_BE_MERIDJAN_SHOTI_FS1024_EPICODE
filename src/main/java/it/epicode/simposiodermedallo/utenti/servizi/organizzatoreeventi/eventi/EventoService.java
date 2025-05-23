@@ -118,9 +118,8 @@ public class EventoService {
         if (!evento.getOrganizzatore().getId().equals(user.getId())){
             throw new IllegalArgumentException("Non sei autorizzato a eliminare questo evento");
         }
-            eventoRepository.deleteById(id);
-
             prenotazioneEventoRepository.findAllByEventoId(id).forEach(prenotazioneEvento -> prenotazioneEventoRepository.deleteById(prenotazioneEvento.getId()));
+        eventoRepository.deleteById(id);
         if(partecipanti != null && !partecipanti.isEmpty()){
             partecipanti.forEach(partecipante -> {
                 utenteNormaleRepository.save(partecipante);
