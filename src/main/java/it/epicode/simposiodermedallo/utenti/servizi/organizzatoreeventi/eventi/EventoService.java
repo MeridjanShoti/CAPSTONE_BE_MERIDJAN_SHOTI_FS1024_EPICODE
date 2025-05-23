@@ -8,6 +8,7 @@ import it.epicode.simposiodermedallo.utenti.persone.utentinormali.UtenteNormale;
 import it.epicode.simposiodermedallo.utenti.persone.utentinormali.UtenteNormaleRepository;
 import it.epicode.simposiodermedallo.utenti.servizi.organizzatoreeventi.OrganizzatoreEventi;
 import it.epicode.simposiodermedallo.utenti.servizi.organizzatoreeventi.OrganizzatoreEventiRepository;
+import it.epicode.simposiodermedallo.utenti.servizi.organizzatoreeventi.eventi.prenotazioni.PrenotazioneEvento;
 import it.epicode.simposiodermedallo.utenti.servizi.organizzatoreeventi.eventi.prenotazioni.PrenotazioneEventoRepository;
 import it.epicode.simposiodermedallo.utenti.servizi.organizzatoreeventi.eventi.prenotazioni.PrenotazioneService;
 import jakarta.mail.MessagingException;
@@ -57,10 +58,24 @@ public class EventoService {
         Evento evento = eventoRepository.findByIdWithPartecipanti(id)
                 .orElseThrow(() -> new EntityNotFoundException("Evento non trovato"));
         String nomeEvento = evento.getNomeEvento();
+        List <PrenotazioneEvento> prenotazioni = prenotazioneEventoRepository.findAllByEventoId(id);
         OrganizzatoreEventi organizzatore = organizzatoreEventiRepository.findById(user.getId()).orElseThrow(() -> new EntityNotFoundException("Organizzatore non trovato"));
         if (!evento.getOrganizzatore().equals(organizzatore) && !user.getRoles().contains(Role.ROLE_ADMIN)) {
             throw new IllegalArgumentException("Non sei autorizzato a modificare questo evento");
         }
+        if (eventoRequest.getDataEvento().isBefore(LocalDate.now())) {
+            throw new IllegalArgumentException("Non puoi modificare un evento in una data passata");
+        }
+        if (eventoRequest.getMaxPartecipanti() < eventoRequest.getMinPartecipanti()) {
+            throw new IllegalArgumentException("Il numero massimo di partecipanti non può essere minore del numero minimo");
+        }
+        if (!eventoRequest.getDataEvento().equals(evento.getDataEvento()) ) {
+            prenotazioni.forEach(prenotazione -> {
+                prenotazione.setDataEvento(eventoRequest.getDataEvento());
+                prenotazioneEventoRepository.save(prenotazione);
+            });
+        }
+
 
         evento.setNomeEvento(eventoRequest.getNomeEvento());
         evento.setMaxPartecipanti(eventoRequest.getMaxPartecipanti());

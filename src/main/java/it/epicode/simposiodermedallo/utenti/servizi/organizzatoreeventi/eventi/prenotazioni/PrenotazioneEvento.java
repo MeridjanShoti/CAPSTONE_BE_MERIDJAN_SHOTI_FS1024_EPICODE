@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Data
@@ -28,10 +29,16 @@ public class PrenotazioneEvento {
     private int numeroBiglietti;
     private String codicePrenotazione;
     private double prezzoPagato;
+    private LocalDate dataPrenotazione;
+    private LocalDate dataEvento;
     @PrePersist
-    public void assegnaCodicePrenotazione() {
+    public void prePersist() {
         if (this.codicePrenotazione == null) {
             this.codicePrenotazione = UUID.randomUUID().toString();
         }
+        if (this.dataPrenotazione == null) {
+            this.dataPrenotazione = LocalDate.now();
+        }
     }
+
 }

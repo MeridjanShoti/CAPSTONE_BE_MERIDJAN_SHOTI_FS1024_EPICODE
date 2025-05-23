@@ -30,7 +30,7 @@ public class PrenotazioneEventoController {
     }
     @GetMapping("")
     @PreAuthorize("hasAuthority('ROLE_USER')")
-    public Page<PrenotazioneEvento> getPrenotazione(@AuthenticationPrincipal AppUser user, @RequestParam(required = false) LocalDate data1, @RequestParam(required = false)LocalDate data2, @RequestParam(required = false) String artista, @RequestParam(required = false) Boolean soloFuturi, @RequestParam(required = false) String nomeParziale, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size, @RequestParam(defaultValue = "data") String sort, @RequestParam(defaultValue = "asc") String sortDir) {
+    public Page<PrenotazioneEvento> getPrenotazione(@AuthenticationPrincipal AppUser user, @RequestParam(required = false) LocalDate data1, @RequestParam(required = false)LocalDate data2, @RequestParam(required = false) String artista, @RequestParam(required = false) Boolean soloFuturi, @RequestParam(required = false) String nomeParziale, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size, @RequestParam(defaultValue = "dataEvento") String sort, @RequestParam(defaultValue = "asc") String sortDir) {
         Sort sortOrder = sortDir.equalsIgnoreCase("desc")
                 ? Sort.by(sort).descending()
                 : Sort.by(sort).ascending();

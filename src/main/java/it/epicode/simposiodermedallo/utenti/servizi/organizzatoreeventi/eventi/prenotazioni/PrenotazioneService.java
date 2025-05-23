@@ -38,7 +38,7 @@ public class PrenotazioneService {
         if (evento.getPartecipanti().size() >= evento.getMaxPartecipanti()) {
             throw new IllegalArgumentException("Evento Sold Out");
         }
-        UtenteNormale utenteNormale = utenteNormaleRepository.findById(user.getId()).orElseThrow(() -> new IllegalArgumentException("Utente non trovato"));
+        UtenteNormale utenteNormale = utenteNormaleRepository.findByAppUserId(user.getId()).orElseThrow(() -> new IllegalArgumentException("Utente non trovato"));
         prenotazione.setEvento(evento);
         prenotazione.setUtenteNormale(utenteNormale);
         prenotazione.setNumeroBiglietti(request.getNumeroBiglietti());
