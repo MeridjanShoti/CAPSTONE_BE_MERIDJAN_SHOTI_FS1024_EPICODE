@@ -103,8 +103,8 @@ public class EventoService {
     public Evento getEvento(Long id) {
         return eventoRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Evento non trovato"));
     }
-    public Page<Evento> getEventi( int page, int size, String sort, EventoFilter filter) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by(sort));
+    public Page<Evento> getEventi( int page, int size, Sort sort, EventoFilter filter) {
+        Pageable pageable = PageRequest.of(page, size, sort);
         Specification<Evento> spec = EventoSpecifications.filterBy(filter);
         return eventoRepository.findAll(spec, pageable);
     }

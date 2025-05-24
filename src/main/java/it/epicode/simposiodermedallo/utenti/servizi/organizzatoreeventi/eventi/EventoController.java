@@ -5,6 +5,7 @@ import it.epicode.simposiodermedallo.common.CommonResponse;
 import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -38,9 +39,9 @@ public class EventoController {
     public void deleteEvento(@PathVariable Long id, @AuthenticationPrincipal AppUser user) {
         eventoService.deleteEvento(id, user);
     }
-    @GetMapping("/")
+    @GetMapping("")
     @PreAuthorize("isAuthenticated()")
-    public Page<Evento> getEventi(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size, @RequestParam(defaultValue = "data") String sort, @AuthenticationPrincipal AppUser user, @RequestParam(required = false) String citta, @RequestParam(required = false) TipoEvento tipoEvento, @RequestParam(required = false) String nomeParziale, @RequestParam(required = false) LocalDate data1, @RequestParam(required = false) LocalDate data2, @RequestParam(required = false) String artista, @RequestParam(required = false) Boolean soloFuturi) {
+    public Page<Evento> getEventi(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size, @RequestParam(defaultValue = "dataEvento") String sort, @AuthenticationPrincipal AppUser user, @RequestParam(required = false) String citta, @RequestParam(required = false) TipoEvento tipoEvento, @RequestParam(required = false) String nomeParziale, @RequestParam(required = false) LocalDate data1, @RequestParam(required = false) LocalDate data2, @RequestParam(required = false) String artista, @RequestParam(required = false) Boolean soloFuturi, @RequestParam(defaultValue = "desc") String sortDir) {
         EventoFilter filter = new EventoFilter();
         filter.setCitta( citta);
         filter.setTipoEvento( tipoEvento);
@@ -49,7 +50,10 @@ public class EventoController {
         filter.setData2( data2);
         filter.setArtista( artista);
         filter.setSoloFuturi( soloFuturi);
-        return eventoService.getEventi( page, size, sort, filter);
+        Sort sortOrder = sortDir.equalsIgnoreCase("desc")
+                ? Sort.by(sort).descending()
+                : Sort.by(sort).ascending();
+        return eventoService.getEventi( page, size, sortOrder, filter);
     }
     @GetMapping("/my-events")
     @PreAuthorize("isAuthenticated()")
