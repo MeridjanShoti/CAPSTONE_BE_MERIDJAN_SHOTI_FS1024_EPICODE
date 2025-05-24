@@ -9,7 +9,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.DayOfWeek;
+import java.time.LocalTime;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -31,8 +34,11 @@ public class SalaProve {
     private String nomeSala;
     private int capienzaMax;
     private double prezzoOrario;
-    @ElementCollection
-    private List<String> fotoSala;
+    private String copertinaSala;
+    @Enumerated(EnumType.STRING)
+    private Set<DayOfWeek> giorniApertura;
+    private LocalTime orarioApertura;
+    private LocalTime orarioChiusura;
     @Column(columnDefinition = "TEXT")
     private String descrizione;
     @Column(columnDefinition = "TEXT")

@@ -24,5 +24,4 @@ public class GestoreSala extends Servizio {
     @OneToMany
     @JsonIgnoreProperties({"gestoreSala"})
     private List<SalaProve> sale;
-
 }
