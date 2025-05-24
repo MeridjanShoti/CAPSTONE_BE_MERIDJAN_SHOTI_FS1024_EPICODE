@@ -35,18 +35,28 @@ public class PrenotazioneService {
     public PrenotazioneEvento save(PrenotazioneEventoRequest request, Long idEvento, AppUser user) throws MessagingException {
         PrenotazioneEvento prenotazione = new PrenotazioneEvento();
         Evento evento = eventoRepository.findById(idEvento).orElseThrow(() -> new IllegalArgumentException("Evento non trovato"));
-        if (evento.getPartecipanti().size() >= evento.getMaxPartecipanti()) {
-            throw new IllegalArgumentException("Evento Sold Out");
+        if (evento.getNumeroPartecipanti() + request.getNumeroBiglietti() > evento.getMaxPartecipanti()) {
+            if (evento.getNumeroPartecipanti() >= evento.getMaxPartecipanti()) {
+                throw new IllegalArgumentException("Evento Sold Out");
+            } else {
+                throw new IllegalArgumentException("Posti non sufficienti per tutti i biglietti richiesti");
+            }
+        }
+        if (evento.getDataEvento().isBefore(LocalDate.now())) {
+            throw new IllegalArgumentException("Evento già terminato");
         }
         UtenteNormale utenteNormale = utenteNormaleRepository.findByAppUserId(user.getId()).orElseThrow(() -> new IllegalArgumentException("Utente non trovato"));
         prenotazione.setEvento(evento);
         prenotazione.setUtenteNormale(utenteNormale);
         prenotazione.setNumeroBiglietti(request.getNumeroBiglietti());
         prenotazione.setUtenteNormale(utenteNormale);
+        prenotazione.setDataEvento(evento.getDataEvento());
         prenotazione.setPrezzoPagato(evento.getPrezzoBiglietto() * request.getNumeroBiglietti());
 
         PrenotazioneEvento prenotazioneSalvata = prenotazioneEventoRepository.save(prenotazione);
         utenteNormaleRepository.save(utenteNormale);
+        evento.getPartecipanti().add(utenteNormale);
+        evento.setNumeroPartecipanti(evento.getNumeroPartecipanti() + request.getNumeroBiglietti());
         eventoRepository.save(evento);
         emailSenderService.sendEmail(utenteNormale.getEmail(), "Prenotazione confermata", "La prenotazione per l'evento " + evento.getNomeEvento() + " è stata confermata. Ti invitiamo a controllare in piattaforma.");
         return prenotazioneSalvata;

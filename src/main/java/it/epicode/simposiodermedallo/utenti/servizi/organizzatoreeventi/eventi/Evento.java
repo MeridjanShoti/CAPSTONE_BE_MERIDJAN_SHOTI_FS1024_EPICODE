@@ -36,7 +36,7 @@ public class Evento {
     @Column(columnDefinition = "TEXT")
     private String note;
     @ManyToMany
-    @JsonIgnoreProperties("eventi")
+    @JsonIgnore
     private List<UtenteNormale> partecipanti;
     @Column(columnDefinition = "TEXT")
     private List<String> fotoEvento;
@@ -52,4 +52,5 @@ public class Evento {
     @Enumerated(EnumType.STRING)
     private TipoEvento tipoEvento;
     private double prezzoBiglietto;
+    private int numeroPartecipanti = 0;
 }
