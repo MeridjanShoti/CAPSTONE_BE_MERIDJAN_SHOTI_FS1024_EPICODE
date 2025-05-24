@@ -18,6 +18,8 @@ import org.springframework.web.server.ResponseStatusException;
 public class InsegnanteController {
     @Autowired
     private InsegnanteRepository insegnanteRepository;
+    @Autowired
+    private InsegnanteService insegnanteService;
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/curriculum/{id}")
     public ResponseEntity<byte[]> downloadCurriculum(@PathVariable Long id) {
@@ -32,5 +34,9 @@ public class InsegnanteController {
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"curriculum.pdf\"")
                 .contentType(MediaType.APPLICATION_PDF)
                 .body(i.getCurriculum());
+    }
+    @GetMapping("/{id}")
+    public InsegnanteResponse getInsegnanteById(@PathVariable Long id) {
+        return insegnanteService.getInsegnante(id);
     }
 }

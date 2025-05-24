@@ -65,8 +65,6 @@ public class AppUserService {
     @Autowired
     private OrganizzatoreEventiRepository organizzatoreEventiRepository;
 
-    @Autowired
-    private UtenteRepository utenteRepository;
 
     @Autowired
     private EmailSenderService emailSenderService;

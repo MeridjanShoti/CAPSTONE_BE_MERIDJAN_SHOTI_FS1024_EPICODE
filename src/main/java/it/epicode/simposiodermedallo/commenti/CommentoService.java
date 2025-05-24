@@ -4,10 +4,13 @@ import com.github.javafaker.App;
 import it.epicode.simposiodermedallo.auth.AppUser;
 import it.epicode.simposiodermedallo.auth.AppUserRepository;
 import it.epicode.simposiodermedallo.auth.Role;
+import it.epicode.simposiodermedallo.common.CommonResponse;
 import it.epicode.simposiodermedallo.utenti.servizi.organizzatoreeventi.eventi.EventoRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -35,18 +38,21 @@ public class CommentoService {
         commento.setTesto(request.getTesto());
         return commentoRepository.save(commento);
     }
-    public void delete(Long id, AppUser user) {
+    public CommonResponse delete(Long id, AppUser user) {
         Commento commento = commentoRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Commento non trovato"));
         if (!user.getId().equals(commento.getAutore().getId()) && !user.getRoles().contains(Role.ROLE_ADMIN)) {
             throw new RuntimeException("Non sei l'autore del commento");
         }
         commentoRepository.delete(commento);
+        return new CommonResponse(id);
     }
     public Commento getById(Long id) {
         return commentoRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Commento non trovato"));
     }
-    public Page<Commento> getAll(Long eventoId, int page, int size) {
-        return commentoRepository.findAllByEventoId(eventoId, org.springframework.data.domain.PageRequest.of(page, size));
+    public Page<Commento> getAllByEvento(Long eventoId, int page, int size, String sort, String sortDir) {
+        Sort.Direction direction = sortDir.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by(direction, sort));
+        return commentoRepository.findAllByEventoId(eventoId, pageRequest);
     }
 }
 

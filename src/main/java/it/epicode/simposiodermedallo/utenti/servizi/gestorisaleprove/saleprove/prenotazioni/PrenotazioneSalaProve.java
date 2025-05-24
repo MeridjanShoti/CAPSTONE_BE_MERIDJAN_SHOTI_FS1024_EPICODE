@@ -1,5 +1,6 @@
 package it.epicode.simposiodermedallo.utenti.servizi.gestorisaleprove.saleprove.prenotazioni;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import it.epicode.simposiodermedallo.utenti.persone.utentinormali.UtenteNormale;
 import it.epicode.simposiodermedallo.utenti.servizi.gestorisaleprove.saleprove.SalaProve;
 import it.epicode.simposiodermedallo.utenti.servizi.gestorisaleprove.saleprove.prenotazioni.slotprenotati.SlotPrenotati;
@@ -20,10 +21,13 @@ public class PrenotazioneSalaProve {
     @GeneratedValue (strategy = jakarta.persistence.GenerationType.IDENTITY)
     private Long id;
     @OneToMany
+    @JsonIgnoreProperties({"prenotazioneSalaProve"})
     private List<SlotPrenotati> slotPrenotati;
     @ManyToOne
+    @JsonIgnoreProperties
     private SalaProve salaProve;
     private int numMembri;
     @ManyToOne
+    @JsonIgnoreProperties({"prenotazioni"})
     private UtenteNormale utente;
 }

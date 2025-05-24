@@ -1,6 +1,7 @@
 package it.epicode.simposiodermedallo.utenti.servizi.scuole;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import it.epicode.simposiodermedallo.utenti.persone.insegnanti.Insegnante;
 import it.epicode.simposiodermedallo.utenti.servizi.Servizio;
 import it.epicode.simposiodermedallo.utenti.servizi.scuole.corsi.Corso;
@@ -22,10 +23,10 @@ import java.util.List;
 @Table(name = "scuole")
 
 public class Scuola extends Servizio {
-    @JsonIgnore
+    @JsonIgnoreProperties({"scuola"})
     @OneToMany (mappedBy = "scuola")
     private List<Corso> corsi;
-    @JsonIgnore
+    @JsonIgnoreProperties({"scuola"})
     @OneToMany (mappedBy = "scuola")
     private List<Insegnante> insegnanti;
 }

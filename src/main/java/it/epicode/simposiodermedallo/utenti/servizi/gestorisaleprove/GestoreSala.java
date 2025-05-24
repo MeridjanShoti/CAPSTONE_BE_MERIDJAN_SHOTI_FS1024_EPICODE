@@ -1,5 +1,6 @@
 package it.epicode.simposiodermedallo.utenti.servizi.gestorisaleprove;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import it.epicode.simposiodermedallo.utenti.servizi.Servizio;
 import it.epicode.simposiodermedallo.utenti.servizi.gestorisaleprove.saleprove.SalaProve;
 import jakarta.persistence.Entity;
@@ -21,6 +22,7 @@ import java.util.List;
 @Table(name = "gestori_sala")
 public class GestoreSala extends Servizio {
     @OneToMany
+    @JsonIgnoreProperties({"gestoreSala"})
     private List<SalaProve> sale;
 
 }
