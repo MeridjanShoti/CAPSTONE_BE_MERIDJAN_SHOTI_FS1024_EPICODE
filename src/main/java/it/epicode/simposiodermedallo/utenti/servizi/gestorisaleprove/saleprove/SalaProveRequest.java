@@ -1,8 +1,8 @@
 package it.epicode.simposiodermedallo.utenti.servizi.gestorisaleprove.saleprove;
 
-import jakarta.annotation.Nullable;
-import jakarta.persistence.Column;
+
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,19 +21,18 @@ public class SalaProveRequest {
     private String indirizzoSala;
     @NotBlank
     private String citta;
-    @NotBlank
     private String descrizione;
     private String regolamento;
-    @NotBlank
+    @NotNull
     private Integer capienzaMax;
-    @NotBlank
+    @NotNull
     private Double prezzoOrario;
     private String copertinaSala;
-    @NotBlank
+    @NotNull
     private Set<DayOfWeek> giorniApertura;
-    @NotBlank
+    @NotNull
     private LocalTime orarioApertura;
-    @NotBlank
+    @NotNull
     private LocalTime orarioChiusura;
     private List<String> ampliETestate;
     private List<String> microfoni;

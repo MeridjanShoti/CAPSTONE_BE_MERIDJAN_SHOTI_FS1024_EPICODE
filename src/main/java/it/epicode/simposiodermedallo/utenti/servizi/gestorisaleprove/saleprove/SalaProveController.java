@@ -1,9 +1,11 @@
 package it.epicode.simposiodermedallo.utenti.servizi.gestorisaleprove.saleprove;
 
 import it.epicode.simposiodermedallo.auth.AppUser;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,8 +16,10 @@ import java.time.DayOfWeek;
 public class SalaProveController {
     @Autowired
     private SalaProveService salaProveService;
+
     @PostMapping("")
-    public SalaProve creaSalaProve(@RequestBody SalaProveRequest salaProveRequest, @AuthenticationPrincipal AppUser user) {
+    @PreAuthorize("hasAuthority('ROLE_GESTORE_SP')")
+    public SalaProve creaSalaProve(@Valid @RequestBody SalaProveRequest salaProveRequest, @AuthenticationPrincipal AppUser user) {
         return salaProveService.createSalaProve(salaProveRequest, user);
     }
     @PutMapping("/{id}")

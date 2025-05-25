@@ -21,11 +21,8 @@ public class SalaProveService {
     private GestoreSalaRepository gestoreSalaRepository;
     public SalaProve createSalaProve(SalaProveRequest request, AppUser user) {
         SalaProve salaProve = new SalaProve();
-        salaProve.setGestoreSala(gestoreSalaRepository.findById(user.getId()).orElseThrow(() -> new IllegalArgumentException("GestoreSala non trovato")));
-        if (!user.getRoles().contains("ROLE_GESTORE_SP")) {
-            throw new IllegalArgumentException("Non sei un gestore di sale prove");
-        }
         GestoreSala gestoreSala = gestoreSalaRepository.findById(user.getId()).orElseThrow(() -> new IllegalArgumentException("GestoreSala non trovato"));
+        salaProve.setGestoreSala(gestoreSala);
         salaProve.setNomeSala(request.getNomeSala());
         salaProve.setIndirizzoSala(request.getIndirizzoSala());
         salaProve.setCitta(request.getCitta());
@@ -46,8 +43,7 @@ public class SalaProveService {
         salaProve.setStrumentazione(strumentazione);
         salaProve.setGestoreSala(gestoreSala);
         salaProveRepository.save(salaProve);
-        gestoreSala.getSale().add(salaProve);
-        gestoreSalaRepository.save(gestoreSala);
+
         return salaProve;
     }
     public SalaProve updateSalaProve(SalaProveRequest request, Long id, AppUser user) {

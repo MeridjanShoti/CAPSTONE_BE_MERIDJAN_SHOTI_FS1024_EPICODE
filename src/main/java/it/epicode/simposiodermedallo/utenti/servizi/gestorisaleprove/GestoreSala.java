@@ -16,12 +16,9 @@ import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
 @Entity
 @Table(name = "gestori_sala")
 public class GestoreSala extends Servizio {
-    @OneToMany
-    @JsonIgnoreProperties({"gestoreSala"})
-    private List<SalaProve> sale;
+
 }

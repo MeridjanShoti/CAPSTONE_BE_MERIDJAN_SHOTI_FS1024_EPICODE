@@ -16,18 +16,16 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 @Table(name = "utenti_normali")
-
+@NoArgsConstructor
 public class UtenteNormale extends Persona {
-    @ManyToMany (mappedBy = "partecipanti")
+    /*@ManyToMany (mappedBy = "partecipanti")
     @JsonIgnoreProperties({"partecipanti"})
-    private List<Corso> corsi;
-    @OneToMany (mappedBy = "utenteNormale")
+    private List<Corso> corsi;*/
+    /*@OneToMany (mappedBy = "utenteNormale")
     @JsonIgnoreProperties({"utenteNormale"})
-    private List<PrenotazioneEvento> prenotazioniEventi;
-    @OneToMany (mappedBy = "utente")
+    private List<PrenotazioneEvento> prenotazioniEventi;*/
+    /*@OneToMany (mappedBy = "utente")
     @JsonIgnoreProperties({"utente"})
-    private List<PrenotazioneSalaProve> prenotazioniSale;
+    private List<PrenotazioneSalaProve> prenotazioniSale;*/
 }

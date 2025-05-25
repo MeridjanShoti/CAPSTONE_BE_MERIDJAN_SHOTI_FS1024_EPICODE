@@ -17,16 +17,10 @@ import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
 @Entity
 @Table(name = "scuole")
 
 public class Scuola extends Servizio {
-    @JsonIgnoreProperties({"scuola"})
-    @OneToMany (mappedBy = "scuola")
-    private List<Corso> corsi;
-    @JsonIgnoreProperties({"scuola"})
-    @OneToMany (mappedBy = "scuola")
-    private List<Insegnante> insegnanti;
+
 }
