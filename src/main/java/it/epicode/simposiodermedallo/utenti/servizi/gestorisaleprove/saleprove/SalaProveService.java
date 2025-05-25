@@ -48,9 +48,6 @@ public class SalaProveService {
     }
     public SalaProve updateSalaProve(SalaProveRequest request, Long id, AppUser user) {
         SalaProve salaProve = salaProveRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("SalaProve non trovata"));
-        if (!user.getRoles().contains("ROLE_GESTORE_SP")) {
-            throw new IllegalArgumentException("Non sei un gestore di sale prove");
-        }
         GestoreSala gestoreSala = gestoreSalaRepository.findById(user.getId()).orElseThrow(() -> new IllegalArgumentException("GestoreSala non trovato"));
         if (!salaProve.getGestoreSala().getId().equals(gestoreSala.getId())) {
             throw new IllegalArgumentException("Non sei il gestore di questa sala");
@@ -79,9 +76,6 @@ public class SalaProveService {
     }
     public void deleteSalaProve(Long id, AppUser user) {
         SalaProve salaProve = salaProveRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("SalaProve non trovata"));
-        if (!user.getRoles().contains("ROLE_GESTORE_SP")) {
-            throw new IllegalArgumentException("Non sei un gestore di sale prove");
-        }
         GestoreSala gestoreSala = gestoreSalaRepository.findById(user.getId()).orElseThrow(() -> new IllegalArgumentException("GestoreSala non trovato"));
         if (!salaProve.getGestoreSala().getId().equals(gestoreSala.getId())) {
             throw new IllegalArgumentException("Non sei il gestore di questa sala");
@@ -97,8 +91,8 @@ public class SalaProveService {
         Specification<SalaProve> spec = SalaProveSpecifications.filterBy(filter);
         return salaProveRepository.findAll(spec, pageable);
     }
-    public Page<SalaProve> getAllSaleProveByGestoreSala(AppUser user, int page, int size, String sort) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by(sort));
+    public Page<SalaProve> getAllSaleProveByGestoreSala(AppUser user, int page, int size, Sort sort) {
+        Pageable pageable = PageRequest.of(page, size, sort);
         return salaProveRepository.findAllByGestoreSalaId(user.getId(), pageable);
     }
 }
