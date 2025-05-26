@@ -8,6 +8,7 @@ import it.epicode.simposiodermedallo.utenti.persone.utentinormali.UtenteNormale;
 import it.epicode.simposiodermedallo.utenti.persone.utentinormali.UtenteNormaleRepository;
 import it.epicode.simposiodermedallo.utenti.servizi.gestorisaleprove.saleprove.SalaProve;
 import it.epicode.simposiodermedallo.utenti.servizi.gestorisaleprove.saleprove.SalaProveRepository;
+import it.epicode.simposiodermedallo.utenti.servizi.gestorisaleprove.saleprove.prenotazioni.slot.SlotDisponibile;
 import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -15,7 +16,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -126,6 +129,7 @@ public class PrenotazioneSalaProveService {
         }
         return prenotazione;
     }
+
 public CommonResponse deletePrenotazione(Long id, AppUser user) throws MessagingException {
     PrenotazioneSalaProve prenotazione = prenotazioneSalaProveRepository.findById(id)
             .orElseThrow(() -> new IllegalArgumentException("Prenotazione non trovata"));
@@ -188,6 +192,42 @@ public CommonResponse deletePrenotazione(Long id, AppUser user) throws Messaging
         prenotazione.setNumMembri(request.getNumMembri());
 
         return prenotazioneSalaProveRepository.save(prenotazione);
+    }
+    public List<SlotDisponibile> getDisponibilita(Long salaId, LocalDate giorno) {
+        SalaProve sala = salaProveRepository.findById(salaId)
+                .orElseThrow(() -> new IllegalArgumentException("Sala non trovata"));
+
+        if (!sala.getGiorniApertura().contains(giorno.getDayOfWeek())) {
+            return List.of();
+        }
+
+        LocalDateTime apertura = giorno.atTime(sala.getOrarioApertura());
+        LocalDateTime chiusura = sala.getOrarioChiusura().isBefore(sala.getOrarioApertura())
+                ? giorno.plusDays(1).atTime(sala.getOrarioChiusura())
+                : giorno.atTime(sala.getOrarioChiusura());
+
+        List<PrenotazioneSalaProve> prenotazioni = prenotazioneSalaProveRepository
+                .findPrenotazioniConflittuali(salaId, apertura, chiusura);
+
+        List<SlotDisponibile> slotDisponibili = new ArrayList<>();
+
+        LocalDateTime slotStart = apertura;
+
+        while (!slotStart.plusMinutes(30).isAfter(chiusura)) {
+            LocalDateTime currentStart = slotStart;
+            LocalDateTime currentEnd = currentStart.plusMinutes(30);
+
+            boolean occupato = prenotazioni.stream().anyMatch(p ->
+                    p.getInizio().isBefore(currentEnd) && p.getFine().isAfter(currentStart));
+
+            if (!occupato) {
+                slotDisponibili.add(new SlotDisponibile(currentStart, currentEnd));
+            }
+
+            slotStart = slotStart.plusMinutes(30);
+        }
+
+        return slotDisponibili;
     }
 }
 
