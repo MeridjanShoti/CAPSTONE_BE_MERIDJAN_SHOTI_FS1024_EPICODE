@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -84,7 +85,7 @@ public class PrenotazioneSalaProveService {
     public Page<PrenotazioneSalaProve> getPrenotazioniGestore(AppUser user, PrenotazioneSalaFilter filter, Pageable pageable) {
         Specification<PrenotazioneSalaProve> spec = Specification.where((root, query, cb) -> cb.equal(root.get("salaProve").get("gestore").get("id"), user.getId()));
         if (filter.getNomeSala() != null && !filter.getNomeSala().isBlank()) {
-            spec = spec.and((root, query, cb) -> cb.like(cb.lower(root.get("salaProve").get("nome")), "%" + filter.getNomeSala().toLowerCase() + "%"));
+            spec = spec.and((root, query, cb) -> cb.like(cb.lower(root.get("salaProve").get("nomeSala")), "%" + filter.getNomeSala().toLowerCase() + "%"));
         }
         if (filter.getIdSala() != null) {
             spec = spec.and((root, query, cb) -> cb.equal(root.get("salaProve").get("id"), filter.getIdSala()));
@@ -93,9 +94,9 @@ public class PrenotazioneSalaProveService {
             spec = spec.and((root, query, cb) -> cb.greaterThanOrEqualTo(root.get("inizio"), filter.getData1()));
         }
         if (filter.getData2() != null) {
-            spec = spec.and((root, query, cb) -> cb.lessThanOrEqualTo(root.get("inizio"), filter.getData2()));
+            spec = spec.and((root, query, cb) -> cb.lessThanOrEqualTo(root.get("inizio"), filter.getData2().atTime(LocalTime.MAX)));
         }
-        if (filter.getSoloFuturi() != null && filter.getSoloFuturi()) {
+        if (filter.getSoloFuturi() != null) {
             spec = spec.and((root, query, cb) -> cb.greaterThanOrEqualTo(root.get("inizio"), LocalDateTime.now()));
         }
         return prenotazioneSalaProveRepository.findAll(spec, pageable);
@@ -103,7 +104,7 @@ public class PrenotazioneSalaProveService {
     public Page<PrenotazioneSalaProve> getPrenotazioniUtente(AppUser user, PrenotazioneSalaFilter filter, Pageable pageable) {
         Specification<PrenotazioneSalaProve> spec = Specification.where((root, query, cb) -> cb.equal(root.get("utente").get("id"), user.getId()));
         if (filter.getNomeSala() != null && !filter.getNomeSala().isBlank()) {
-            spec = spec.and((root, query, cb) -> cb.like(cb.lower(root.get("salaProve").get("nome")), "%" + filter.getNomeSala().toLowerCase() + "%"));
+            spec = spec.and((root, query, cb) -> cb.like(cb.lower(root.get("salaProve").get("nomeSala")), "%" + filter.getNomeSala().toLowerCase() + "%"));
         }
         if (filter.getIdSala() != null) {
             spec = spec.and((root, query, cb) -> cb.equal(root.get("salaProve").get("id"), filter.getIdSala()));
@@ -112,7 +113,7 @@ public class PrenotazioneSalaProveService {
             spec = spec.and((root, query, cb) -> cb.greaterThanOrEqualTo(root.get("inizio"), filter.getData1()));
         }
         if (filter.getData2() != null) {
-            spec = spec.and((root, query, cb) -> cb.lessThanOrEqualTo(root.get("inizio"), filter.getData2()));
+            spec = spec.and((root, query, cb) -> cb.lessThanOrEqualTo(root.get("inizio"), filter.getData2().atTime(LocalTime.MAX)));
         }
         if (filter.getSoloFuturi() != null && filter.getSoloFuturi()) {
             spec = spec.and((root, query, cb) -> cb.greaterThanOrEqualTo(root.get("inizio"), LocalDateTime.now()));
