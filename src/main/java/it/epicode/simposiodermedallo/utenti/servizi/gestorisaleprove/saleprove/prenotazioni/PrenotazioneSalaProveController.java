@@ -65,13 +65,13 @@ public class PrenotazioneSalaProveController {
     public PrenotazioneSalaProve updatePrenotazione(@RequestBody PrenotazioneSalaRequest request, @PathVariable Long id, @AuthenticationPrincipal AppUser user) {
         return prenotazioneSalaProveService.updatePrenotazione(id, request, user);
     }
-    @GetMapping("/disponibilita")
+    @GetMapping("/disponibilita/{id}")
     @PreAuthorize("isAuthenticated()")
     @ResponseStatus(HttpStatus.OK)
     public List<SlotDisponibile> getDisponibilita(
-            @RequestParam Long salaId,
+            @PathVariable Long id,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate giorno
     ) {
-        return prenotazioneSalaProveService.getDisponibilita(salaId, giorno);
+        return prenotazioneSalaProveService.getDisponibilita(id, giorno);
     }
 }

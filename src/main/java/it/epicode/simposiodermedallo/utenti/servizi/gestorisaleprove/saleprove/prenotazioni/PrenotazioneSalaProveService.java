@@ -73,6 +73,7 @@ public class PrenotazioneSalaProveService {
         }
 
         PrenotazioneSalaProve prenotazione = new PrenotazioneSalaProve();
+        prenotazione.setPagata(request.getPagata());
         prenotazione.setInizio(inizio);
         prenotazione.setFine(fine);
         prenotazione.setNumMembri(request.getNumMembri());
@@ -190,6 +191,7 @@ public CommonResponse deletePrenotazione(Long id, AppUser user) throws Messaging
         prenotazione.setInizio(inizio);
         prenotazione.setFine(fine);
         prenotazione.setNumMembri(request.getNumMembri());
+        prenotazione.setPagata(request.getPagata());
 
         return prenotazioneSalaProveRepository.save(prenotazione);
     }

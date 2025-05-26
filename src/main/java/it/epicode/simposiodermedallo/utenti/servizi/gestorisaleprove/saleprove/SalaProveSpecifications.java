@@ -7,7 +7,7 @@ public class SalaProveSpecifications {
         return (root, query, cb) -> {
             var predicate = cb.conjunction();
             if (filter.getCitta() != null) {
-                predicate = cb.and(predicate, cb.equal(root.get("citta"),  "%" + filter.getCitta().toLowerCase() + "%"));
+                predicate = cb.and(predicate, cb.like(cb.lower(root.get("citta")),  "%" + filter.getCitta().toLowerCase() + "%"));
             }
 
             if (filter.getGiornoApertura() != null) {

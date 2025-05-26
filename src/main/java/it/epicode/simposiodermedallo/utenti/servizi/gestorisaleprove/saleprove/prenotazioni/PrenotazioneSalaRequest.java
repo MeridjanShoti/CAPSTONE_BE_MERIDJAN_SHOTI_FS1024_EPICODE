@@ -1,7 +1,6 @@
 package it.epicode.simposiodermedallo.utenti.servizi.gestorisaleprove.saleprove.prenotazioni;
 
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,7 +15,8 @@ public class PrenotazioneSalaRequest {
     private LocalDateTime inizio;
     @NotNull
     private LocalDateTime fine;
-    @NotBlank
+    @NotNull
     @Min(1)
     private int numMembri;
+    private Boolean pagata;
 }

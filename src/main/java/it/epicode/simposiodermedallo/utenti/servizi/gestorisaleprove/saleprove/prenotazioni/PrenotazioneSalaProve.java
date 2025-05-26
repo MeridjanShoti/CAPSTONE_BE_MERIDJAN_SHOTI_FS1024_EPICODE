@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.UUID;
 
 @Data
 @AllArgsConstructor
@@ -34,4 +35,12 @@ public class PrenotazioneSalaProve {
     @JoinColumn(name = "utente_id", nullable = false)
     @JsonIgnoreProperties({"prenotazioni"})
     private UtenteNormale utente;
+    private boolean pagata;
+    private String codicePrenotazione;
+    @PrePersist
+    public void prePersist() {
+        if (this.codicePrenotazione == null) {
+            this.codicePrenotazione = UUID.randomUUID().toString();
+        }
+    }
 }

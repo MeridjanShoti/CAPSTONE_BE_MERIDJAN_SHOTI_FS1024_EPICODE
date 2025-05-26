@@ -32,6 +32,7 @@ public class SalaProve {
     private int capienzaMax;
     private double prezzoOrario;
     private String copertinaSala;
+    @ElementCollection(targetClass = DayOfWeek.class)
     @Enumerated(EnumType.STRING)
     private Set<DayOfWeek> giorniApertura;
     private LocalTime orarioApertura;
