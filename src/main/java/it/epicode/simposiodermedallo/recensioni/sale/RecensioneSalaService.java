@@ -6,6 +6,7 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -17,12 +18,15 @@ public class RecensioneSalaService {
     @Autowired
     private SalaProveRepository salaRepository;
     public RecensioneSala save(Long id, RecensioneSalaRequest request, AppUser appUser) {
+        if(recensioneSalaRepository.existsBySalaProveIdAndAutoreId(id, appUser.getId())) {
+            throw new IllegalArgumentException("Hai già lasciato una recensione per questa sala");
+        }
         RecensioneSala recensioneSala = new RecensioneSala();
         recensioneSala.setSalaProve(salaRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Sala non trovata")));
         recensioneSala.setTesto(request.getTesto());
         recensioneSala.setVoto(request.getVoto());
         recensioneSala.setAutore(appUser);
-        return recensioneSala;
+        return recensioneSalaRepository.save(recensioneSala);
     }
     public RecensioneSala update(Long id, RecensioneSalaRequest request, AppUser appUser) {
         RecensioneSala recensioneSala = recensioneSalaRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Recensione non trovata"));
@@ -43,7 +47,9 @@ public class RecensioneSalaService {
         }
         recensioneSalaRepository.delete(recensioneSala);
     }
-    public Page<RecensioneSala> getAll(Long salaId, int page, int size) {
-        return recensioneSalaRepository.findAllBySalaProveId(salaId, PageRequest.of(page, size));
+    public Page<RecensioneSala> getAll(Long salaId, int page, int size, String sort, String sortDir) {
+        Sort.Direction direction = sortDir.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by(direction, sort));
+        return recensioneSalaRepository.findAllBySalaProveId(salaId, pageRequest);
     }
 }
