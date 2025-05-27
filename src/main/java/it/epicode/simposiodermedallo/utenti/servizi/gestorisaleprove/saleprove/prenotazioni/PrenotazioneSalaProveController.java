@@ -74,4 +74,14 @@ public class PrenotazioneSalaProveController {
     ) {
         return prenotazioneSalaProveService.getDisponibilita(id, giorno);
     }
+    @GetMapping("/disponibilita-update/{prenotazioneId}")
+    @PreAuthorize("hasRole('ROLE_GESTORE_SP')")
+    @ResponseStatus(HttpStatus.OK)
+    public List<SlotDisponibile> getDisponibilita(
+            @PathVariable Long prenotazioneId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate giorno,
+            @AuthenticationPrincipal AppUser user
+    ) {
+        return prenotazioneSalaProveService.getDisponibilitaUpdate(prenotazioneId, giorno, user);
+    }
 }

@@ -1,8 +1,13 @@
 package it.epicode.simposiodermedallo.utenti.servizi.gestorisaleprove.saleprove;
 
 import it.epicode.simposiodermedallo.auth.AppUser;
+import it.epicode.simposiodermedallo.common.EmailSenderService;
 import it.epicode.simposiodermedallo.utenti.servizi.gestorisaleprove.GestoreSala;
 import it.epicode.simposiodermedallo.utenti.servizi.gestorisaleprove.GestoreSalaRepository;
+import it.epicode.simposiodermedallo.utenti.servizi.gestorisaleprove.saleprove.prenotazioni.PrenotazioneSalaProve;
+import it.epicode.simposiodermedallo.utenti.servizi.gestorisaleprove.saleprove.prenotazioni.PrenotazioneSalaProveRepository;
+import jakarta.mail.MessagingException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -12,6 +17,8 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import java.util.List;
+@Slf4j
 @Service
 @Validated
 public class SalaProveService {
@@ -19,6 +26,10 @@ public class SalaProveService {
     private SalaProveRepository salaProveRepository;
     @Autowired
     private GestoreSalaRepository gestoreSalaRepository;
+    @Autowired
+    private PrenotazioneSalaProveRepository prenotazioneSalaProveRepository;
+    @Autowired
+    private EmailSenderService emailSenderService;
     public SalaProve createSalaProve(SalaProveRequest request, AppUser user) {
         SalaProve salaProve = new SalaProve();
         GestoreSala gestoreSala = gestoreSalaRepository.findById(user.getId()).orElseThrow(() -> new IllegalArgumentException("GestoreSala non trovato"));
@@ -80,7 +91,19 @@ public class SalaProveService {
         if (!salaProve.getGestoreSala().getId().equals(gestoreSala.getId())) {
             throw new IllegalArgumentException("Non sei il gestore di questa sala");
         }
-        //da modificare in funzione delle prenotazioni
+        if (prenotazioneSalaProveRepository.existsBySalaProveId(id)) {
+            List<PrenotazioneSalaProve> prenotazioni = prenotazioneSalaProveRepository.findAllBySalaProveId(id);
+            prenotazioni.forEach(prenotazione -> {
+                try {
+                    emailSenderService.sendEmail(prenotazione.getUtente().getEmail(), "Prenotazione cancellata", "La prenotazione alla sala prove " + prenotazione.getSalaProve().getNomeSala() + " è stata cancellata");
+                    prenotazioneSalaProveRepository.delete(prenotazione);
+                } catch (MessagingException e) {
+                    log.error("Errore nell'invio dell'email", e);
+                }
+            });
+
+        }
+
         salaProveRepository.delete(salaProve);
     }
     public SalaProve getSalaProve(Long id) {

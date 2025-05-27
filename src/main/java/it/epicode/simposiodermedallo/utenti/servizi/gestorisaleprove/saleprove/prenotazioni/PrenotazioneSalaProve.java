@@ -25,7 +25,7 @@ public class PrenotazioneSalaProve {
     private LocalDateTime inizio;
     @Column(nullable = false)
     private LocalDateTime fine;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.REMOVE)
     @JsonIgnoreProperties
     @JoinColumn(name = "sala_id", nullable = false)
     private SalaProve salaProve;

@@ -24,4 +24,6 @@ public interface PrenotazioneSalaProveRepository extends JpaRepository<Prenotazi
             @Param("inizio") LocalDateTime inizio,
             @Param("fine") LocalDateTime fine
     );
+    boolean existsBySalaProveId(Long id);
+    List<PrenotazioneSalaProve> findAllBySalaProveId(Long id);
 }

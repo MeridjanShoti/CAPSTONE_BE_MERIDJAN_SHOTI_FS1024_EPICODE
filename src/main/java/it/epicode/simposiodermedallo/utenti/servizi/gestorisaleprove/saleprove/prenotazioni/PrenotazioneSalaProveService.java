@@ -1,5 +1,6 @@
 package it.epicode.simposiodermedallo.utenti.servizi.gestorisaleprove.saleprove.prenotazioni;
 
+import com.github.javafaker.App;
 import it.epicode.simposiodermedallo.auth.AppUser;
 import it.epicode.simposiodermedallo.auth.Role;
 import it.epicode.simposiodermedallo.common.CommonResponse;
@@ -83,7 +84,7 @@ public class PrenotazioneSalaProveService {
         return prenotazioneSalaProveRepository.save(prenotazione);
     }
     public Page<PrenotazioneSalaProve> getPrenotazioniGestore(AppUser user, PrenotazioneSalaFilter filter, Pageable pageable) {
-        Specification<PrenotazioneSalaProve> spec = Specification.where((root, query, cb) -> cb.equal(root.get("salaProve").get("gestore").get("id"), user.getId()));
+        Specification<PrenotazioneSalaProve> spec = Specification.where((root, query, cb) -> cb.equal(root.get("salaProve").get("gestoreSala").get("id"), user.getId()));
         if (filter.getNomeSala() != null && !filter.getNomeSala().isBlank()) {
             spec = spec.and((root, query, cb) -> cb.like(cb.lower(root.get("salaProve").get("nomeSala")), "%" + filter.getNomeSala().toLowerCase() + "%"));
         }
@@ -135,7 +136,7 @@ public class PrenotazioneSalaProveService {
 public CommonResponse deletePrenotazione(Long id, AppUser user) throws MessagingException {
     PrenotazioneSalaProve prenotazione = prenotazioneSalaProveRepository.findById(id)
             .orElseThrow(() -> new IllegalArgumentException("Prenotazione non trovata"));
-    if (user.getId().equals(prenotazione.getSalaProve().getGestoreSala().getId())){
+    if (!user.getId().equals(prenotazione.getSalaProve().getGestoreSala().getId())){
         throw new IllegalArgumentException("Non sei il gestore della sala prove");
     }
     prenotazioneSalaProveRepository.delete(prenotazione);
@@ -231,6 +232,45 @@ public CommonResponse deletePrenotazione(Long id, AppUser user) throws Messaging
         }
 
         return slotDisponibili;
+    }
+    public List<SlotDisponibile> getDisponibilitaUpdate(Long prenotazioneId, LocalDate giorno, AppUser user) {
+        PrenotazioneSalaProve prenotazione = prenotazioneSalaProveRepository.findById(prenotazioneId).orElseThrow(() -> new IllegalArgumentException("Prenotazione non trovata"));
+        if (!user.getId().equals(prenotazione.getSalaProve().getGestoreSala().getId())) {
+            throw new IllegalArgumentException("Non sei il gestore della sala");
+        }
+        if (!prenotazione.getSalaProve().getGiorniApertura().contains(giorno.getDayOfWeek())) {
+            return List.of();
+        }
+
+        LocalDateTime apertura = giorno.atTime(prenotazione.getSalaProve().getOrarioApertura());
+        LocalDateTime chiusura = prenotazione.getSalaProve().getOrarioChiusura().isBefore(prenotazione.getSalaProve().getOrarioApertura())
+                ? giorno.plusDays(1).atTime(prenotazione.getSalaProve().getOrarioChiusura())
+                : giorno.atTime(prenotazione.getSalaProve().getOrarioChiusura());
+
+        List<PrenotazioneSalaProve> conflitti = prenotazioneSalaProveRepository.findPrenotazioniConflittuali(
+                prenotazione.getSalaProve().getId(), prenotazione.getInizio(), prenotazione.getFine()
+        ).stream().filter(p -> !p.getId().equals(prenotazioneId)).toList();
+
+        List<SlotDisponibile> slotDisponibili = new ArrayList<>();
+
+        LocalDateTime slotStart = apertura;
+
+        while (!slotStart.plusMinutes(30).isAfter(chiusura)) {
+            LocalDateTime currentStart = slotStart;
+            LocalDateTime currentEnd = currentStart.plusMinutes(30);
+
+            boolean occupato = conflitti.stream().anyMatch(p ->
+                    p.getInizio().isBefore(currentEnd) && p.getFine().isAfter(currentStart));
+
+            if (!occupato) {
+                slotDisponibili.add(new SlotDisponibile(currentStart, currentEnd));
+            }
+
+            slotStart = slotStart.plusMinutes(30);
+        }
+
+        return slotDisponibili;
+
     }
 }
 
