@@ -42,6 +42,9 @@ public class PrenotazioneSalaProveService {
 
         LocalDateTime inizio = request.getInizio();
         LocalDateTime fine = request.getFine();
+        if(inizio.isBefore(LocalDateTime.now())){
+            throw new IllegalArgumentException("L'orario di inizio deve essere successivo a quello attuale");
+        }
 
         if (!inizio.isBefore(fine)) {
             throw new IllegalArgumentException("L'orario di inizio deve precedere quello di fine");
@@ -156,6 +159,9 @@ public CommonResponse deletePrenotazione(Long id, AppUser user) throws Messaging
 
         LocalDateTime inizio = request.getInizio();
         LocalDateTime fine = request.getFine();
+        if(inizio.isBefore(LocalDateTime.now())){
+            throw new IllegalArgumentException("L'orario di inizio deve essere successivo a quello attuale");
+        }
 
         if (!inizio.isBefore(fine)) {
             throw new IllegalArgumentException("L'orario di inizio deve precedere quello di fine");
@@ -216,8 +222,13 @@ public CommonResponse deletePrenotazione(Long id, AppUser user) throws Messaging
         List<SlotDisponibile> slotDisponibili = new ArrayList<>();
 
         LocalDateTime slotStart = apertura;
-
+        LocalDateTime now = LocalDateTime.now();
+        boolean isOggi = giorno.equals(now.toLocalDate());
         while (!slotStart.plusMinutes(30).isAfter(chiusura)) {
+            if (isOggi && slotStart.isBefore(now)) {
+                slotStart = slotStart.plusMinutes(30);
+                continue;
+            }
             LocalDateTime currentStart = slotStart;
             LocalDateTime currentEnd = currentStart.plusMinutes(30);
 
@@ -254,8 +265,13 @@ public CommonResponse deletePrenotazione(Long id, AppUser user) throws Messaging
         List<SlotDisponibile> slotDisponibili = new ArrayList<>();
 
         LocalDateTime slotStart = apertura;
-
+        LocalDateTime now = LocalDateTime.now();
+        boolean isOggi = giorno.equals(now.toLocalDate());
         while (!slotStart.plusMinutes(30).isAfter(chiusura)) {
+            if (isOggi && slotStart.isBefore(now)) {
+                slotStart = slotStart.plusMinutes(30);
+                continue;
+            }
             LocalDateTime currentStart = slotStart;
             LocalDateTime currentEnd = currentStart.plusMinutes(30);
 
