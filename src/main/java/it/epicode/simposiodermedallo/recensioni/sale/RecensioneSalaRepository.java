@@ -7,4 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface RecensioneSalaRepository extends JpaRepository<RecensioneSala, Long> {
     Page<RecensioneSala> findAllBySalaProveId(Long id, Pageable pageable);
+    Boolean existsBySalaProveIdAndAutoreId(Long salaId, Long autoreId);
 }

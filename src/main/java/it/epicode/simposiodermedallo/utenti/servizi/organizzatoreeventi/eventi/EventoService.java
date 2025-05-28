@@ -112,7 +112,7 @@ public class EventoService {
     public CommonResponse deleteEvento(Long id, AppUser user) {
         Evento evento = eventoRepository.findByIdWithPartecipanti(id)
                 .orElseThrow(() -> new EntityNotFoundException("Evento non trovato"));
-        Evento datiEvento = new Evento();
+
         String nomeEvento = evento.getNomeEvento();
         List<UtenteNormale> partecipanti = evento.getPartecipanti();
         if (!evento.getOrganizzatore().getId().equals(user.getId())){

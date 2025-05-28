@@ -8,6 +8,9 @@ import it.epicode.simposiodermedallo.utenti.persone.utentinormali.UtenteNormale;
 import it.epicode.simposiodermedallo.utenti.persone.utentinormali.UtenteNormaleRepository;
 import it.epicode.simposiodermedallo.utenti.servizi.gestorisaleprove.GestoreSala;
 import it.epicode.simposiodermedallo.utenti.servizi.gestorisaleprove.GestoreSalaRepository;
+import it.epicode.simposiodermedallo.utenti.servizi.gestorisaleprove.saleprove.SalaProve;
+import it.epicode.simposiodermedallo.utenti.servizi.gestorisaleprove.saleprove.SalaProveRepository;
+import it.epicode.simposiodermedallo.utenti.servizi.gestorisaleprove.saleprove.Strumentazione;
 import it.epicode.simposiodermedallo.utenti.servizi.organizzatoreeventi.OrganizzatoreEventi;
 import it.epicode.simposiodermedallo.utenti.servizi.organizzatoreeventi.OrganizzatoreEventiRepository;
 import it.epicode.simposiodermedallo.utenti.servizi.organizzatoreeventi.eventi.Evento;
@@ -23,6 +26,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -52,6 +56,8 @@ public class AuthRunner implements ApplicationRunner {
     Faker faker;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private SalaProveRepository salaProveRepository;
     @Override
     public void run(ApplicationArguments args) throws Exception {
         if (!appUserRepository.existsByRolesContaining(Role.ROLE_ADMIN)) {
@@ -229,6 +235,33 @@ public class AuthRunner implements ApplicationRunner {
                     gestoreSala.setAppUser(appUser);
                     gestoreSala.setId(appUser.getId());
                     gestoreSalaRepository.save(gestoreSala);
+                    for (int j = 0; j < 3; j++) {
+                        try {
+                            SalaProve salaProve = new SalaProve();
+                            salaProve.setNomeSala(faker.funnyName().name() + faker.music().genre());
+                            salaProve.setCapienzaMax(faker.number().numberBetween(5, 20));
+                            salaProve.setDescrizione(faker.lorem().paragraph());
+                            salaProve.setRegolamento(faker.lorem().paragraph());
+                            salaProve.setIndirizzoSala(faker.address().streetAddress());
+                            salaProve.setCitta(faker.address().city());
+                            salaProve.setGestoreSala(gestoreSala);
+                            salaProve.setPrezzoOrario(faker.number().numberBetween(10, 30));
+                            salaProve.setCopertinaSala("https://m.media-amazon.com/images/S/pv-target-images/fb3e18571fefeb973850615b530a8c6440fc338e33b00438d52152f38f58fca8._SX1080_FMjpg_.jpg");
+                            salaProve.setGiorniApertura(Set.of(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY));
+                            salaProve.setOrarioApertura(LocalTime.of(faker.number().numberBetween(9, 13), 0));
+                            salaProve.setOrarioChiusura(LocalTime.of(faker.number().numberBetween(18, 23), 0));
+                            Strumentazione strumentazione = new Strumentazione();
+                            strumentazione.setAmpliETestate(List.of("Marshall", "Mesa Boogie", "Randall"));
+                            strumentazione.setMicrofoni(List.of("Shure", "Rode", "AKG"));
+                            strumentazione.setMixer(List.of("Shure", "Rode", "AKG"));
+                            strumentazione.setSetBatteria(List.of("Evans", "Zildjian", "Yamaha"));
+                            strumentazione.setAltro(List.of("Tastiera Korg"));
+                            salaProve.setStrumentazione(strumentazione);
+                            salaProveRepository.save(salaProve);
+                        } catch (Exception e) {
+                            log.error(e.getMessage());
+                        }
+                    }
                 } catch (Exception e) {
                     log.error(e.getMessage());
                 }

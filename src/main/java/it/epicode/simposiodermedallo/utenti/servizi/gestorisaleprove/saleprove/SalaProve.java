@@ -1,15 +1,18 @@
 package it.epicode.simposiodermedallo.utenti.servizi.gestorisaleprove.saleprove;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import it.epicode.simposiodermedallo.utenti.servizi.gestorisaleprove.GestoreSala;
 import it.epicode.simposiodermedallo.utenti.servizi.gestorisaleprove.saleprove.prenotazioni.PrenotazioneSalaProve;
-import it.epicode.simposiodermedallo.utenti.servizi.gestorisaleprove.saleprove.prenotazioni.slotprenotati.SlotPrenotati;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.DayOfWeek;
+import java.time.LocalTime;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -20,9 +23,6 @@ public class SalaProve {
     @Id
     @GeneratedValue (strategy = GenerationType.IDENTITY)
     private Long id;
-    @OneToMany (mappedBy = "salaProve")
-    @JsonIgnoreProperties({"salaProve"})
-    private List<SlotPrenotati> slotPrenotati;
     @ManyToOne
     @JsonIgnoreProperties({"saleProve"})
     private GestoreSala gestoreSala;
@@ -31,15 +31,16 @@ public class SalaProve {
     private String nomeSala;
     private int capienzaMax;
     private double prezzoOrario;
-    @ElementCollection
-    private List<String> fotoSala;
+    private String copertinaSala;
+    @ElementCollection(targetClass = DayOfWeek.class)
+    @Enumerated(EnumType.STRING)
+    private Set<DayOfWeek> giorniApertura;
+    private LocalTime orarioApertura;
+    private LocalTime orarioChiusura;
     @Column(columnDefinition = "TEXT")
     private String descrizione;
     @Column(columnDefinition = "TEXT")
     private String regolamento;
-    @OneToMany
-    @JsonIgnoreProperties({"salaProve"})
-    private List<PrenotazioneSalaProve> prenotazioni;
     @Embedded
     private Strumentazione strumentazione;
 

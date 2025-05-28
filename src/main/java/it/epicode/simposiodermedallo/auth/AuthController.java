@@ -6,6 +6,7 @@ import it.epicode.simposiodermedallo.utenti.persone.utentinormali.UtenteNormaleR
 import it.epicode.simposiodermedallo.utenti.persone.utentinormali.UtenteNormaleRequest;
 import it.epicode.simposiodermedallo.utenti.servizi.ServizioRequest;
 import it.epicode.simposiodermedallo.utenti.servizi.gestorisaleprove.GestoreSalaRepository;
+import it.epicode.simposiodermedallo.utenti.servizi.gestorisaleprove.saleprove.SalaProveRepository;
 import it.epicode.simposiodermedallo.utenti.servizi.organizzatoreeventi.OrganizzatoreEventiRepository;
 import it.epicode.simposiodermedallo.utenti.servizi.scuole.ScuolaRepository;
 import jakarta.mail.MessagingException;
