@@ -23,9 +23,6 @@ import java.util.List;
 public class Insegnante extends Persona {
     @ElementCollection
     private List<String> strumenti;
-    @OneToMany (mappedBy = "insegnante")
-    @JsonIgnoreProperties({"insegnante"})
-    private List<Corso> corsi;
     @Column(columnDefinition = "TEXT")
     @Lob
     private byte[] curriculum;
@@ -33,5 +30,4 @@ public class Insegnante extends Persona {
     @ManyToOne
     @JsonIgnoreProperties({"insegnanti"})
     private Scuola scuola;
-
 }

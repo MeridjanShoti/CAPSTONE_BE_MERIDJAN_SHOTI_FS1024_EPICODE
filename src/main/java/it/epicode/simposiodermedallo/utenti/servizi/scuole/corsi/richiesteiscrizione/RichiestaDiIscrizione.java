@@ -1,6 +1,7 @@
-package it.epicode.simposiodermedallo.utenti.servizi.scuole.corsi;
+package it.epicode.simposiodermedallo.utenti.servizi.scuole.corsi.richiesteiscrizione;
 
 import it.epicode.simposiodermedallo.utenti.persone.utentinormali.UtenteNormale;
+import it.epicode.simposiodermedallo.utenti.servizi.scuole.corsi.Corso;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToOne;
