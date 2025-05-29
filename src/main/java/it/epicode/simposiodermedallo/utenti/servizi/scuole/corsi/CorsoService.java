@@ -36,8 +36,14 @@ public class CorsoService {
         corso.setCosto(request.getCosto());
         corso.setDataInizio(request.getDataInizio());
         corso.setDataFine(request.getDataFine());
+        corso.setOrarioFine(request.getOrarioFine());
+        corso.setOrarioInizio(request.getOrarioInizio());
+        corso.setLinkLezione(request.getLinkLezione());
+        corso.setObiettivi(request.getObiettivi());
+        corso.setLocandina(request.getLocandina());
         corso.setFrequenza(request.getFrequenza());
         corso.setNote(request.getNote());
+        corso.setStatoCorso(StatoCorso.IN_PROGRAMMA);
         return corsoRepository.save(corso);
     }
     @Scheduled(cron = "0 0 0 * * *")
@@ -89,6 +95,7 @@ public class CorsoService {
         corso.setOrarioFine(request.getOrarioFine());
         corso.setLinkLezione(request.getLinkLezione());
         corso.setObiettivi(request.getObiettivi());
+        corso.setLocandina(request.getLocandina());
         return corsoRepository.save(corso);
     }
     public void delete(Long id, AppUser user) {

@@ -49,4 +49,5 @@ public class Corso {
     private LocalTime orarioFine;
     private String linkLezione;
     private String obiettivi;
+    private String locandina;
 }

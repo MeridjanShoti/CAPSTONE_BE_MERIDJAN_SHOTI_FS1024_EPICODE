@@ -40,4 +40,5 @@ public class CorsoResponse {
     private LocalTime orarioInizio;
     private LocalTime orarioFine;
     private String obiettivi;
+    private String locandina;
 }
