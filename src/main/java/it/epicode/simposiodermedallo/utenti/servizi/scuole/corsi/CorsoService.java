@@ -43,7 +43,7 @@ public class CorsoService {
     @Scheduled(cron = "0 0 0 * * *")
     public void aggiornaStatoCorsi() {
         LocalDate oggi = LocalDate.now();
-        List<Corso> corsi = corsoRepository.findCorsiDaAggiornare(oggi);
+        List<Corso> corsi = corsoRepository.findCorsiDaAggiornare(oggi, StatoCorso.IN_PROGRAMMA, StatoCorso.IN_CORSO);
 
         for (Corso corso : corsi) {
             if (corso.getDataInizio().isEqual(oggi)) {
