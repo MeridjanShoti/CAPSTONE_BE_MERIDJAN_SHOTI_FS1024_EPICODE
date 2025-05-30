@@ -5,7 +5,6 @@ import it.epicode.simposiodermedallo.auth.Role;
 import it.epicode.simposiodermedallo.utenti.servizi.scuole.ScuolaService;
 import it.epicode.simposiodermedallo.utenti.servizi.scuole.corsi.enums.Livello;
 import it.epicode.simposiodermedallo.utenti.servizi.scuole.corsi.enums.StatoCorso;
-import it.epicode.simposiodermedallo.utenti.servizi.scuole.corsi.enums.TipoFrequenza;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -15,8 +14,11 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @Validated
@@ -41,7 +43,7 @@ public class CorsoService {
         corso.setLinkLezione(request.getLinkLezione());
         corso.setObiettivi(request.getObiettivi());
         corso.setLocandina(request.getLocandina());
-        corso.setFrequenza(request.getFrequenza());
+        corso.setGiorniLezione(request.getGiorniLezione());
         corso.setNote(request.getNote());
         corso.setStatoCorso(StatoCorso.IN_PROGRAMMA);
         return corsoRepository.save(corso);
@@ -89,7 +91,7 @@ public class CorsoService {
         corso.setCosto(request.getCosto());
         corso.setDataInizio(request.getDataInizio());
         corso.setDataFine(request.getDataFine());
-        corso.setFrequenza(request.getFrequenza());
+        corso.setGiorniLezione(request.getGiorniLezione());
         corso.setNote(request.getNote());
         corso.setOrarioInizio(request.getOrarioInizio());
         corso.setOrarioFine(request.getOrarioFine());
@@ -105,7 +107,7 @@ public class CorsoService {
         }
         corsoRepository.delete(corso);
     }
-public Page<Corso> getAllCorsiByUser(int page, int size, String nomeCorso, Livello livello, TipoFrequenza frequenza, Double costo, String strumenti, LocalDate dataInizio, LocalDate dataFine, StatoCorso statoCorso, Sort sort, AppUser user) {
+public Page<Corso> getAllCorsiByUser(int page, int size, String nomeCorso, Livello livello, Integer giorniASettimana, Double costo, String strumenti, LocalDate dataInizio, LocalDate dataFine, StatoCorso statoCorso, Sort sort, AppUser user) {
         if(user.getRoles().contains( Role.ROLE_ORGANIZZATORE) || user.getRoles().contains( Role.ROLE_ADMIN) || user.getRoles().contains( Role.ROLE_GESTORE_SP)) {
             throw new IllegalArgumentException("Non ti serve cercare i corsi");
         }
@@ -122,7 +124,7 @@ public Page<Corso> getAllCorsiByUser(int page, int size, String nomeCorso, Livel
         CorsoFilter filter = new CorsoFilter();
         filter.setNomeCorso(nomeCorso);
         filter.setLivello(livello);
-        filter.setFrequenza(frequenza);
+        filter.setGiorniASettimana(giorniASettimana);
         filter.setCosto(costo);
         filter.setStrumenti(strumenti);
         filter.setDataInizio(dataInizio);
@@ -134,11 +136,11 @@ public Page<Corso> getAllCorsiByUser(int page, int size, String nomeCorso, Livel
         PageRequest pageable = PageRequest.of(page, size, sort);
         return corsoRepository.findAll(CorsoSpecifications.filterBy(filter), pageable);
     }
-    public Page<CorsoResponse> getAllCorsi(int page, int size, String nomeCorso, Livello livello, TipoFrequenza frequenza, Double costo, String strumenti, LocalDate dataInizio, LocalDate dataFine, Sort sort) {
+    public Page<CorsoResponse> getAllCorsi(int page, int size, String nomeCorso, Livello livello, Integer giorniASettimana, Double costo, String strumenti, LocalDate dataInizio, LocalDate dataFine, Sort sort) {
         CorsoFilter filter = new CorsoFilter();
         filter.setNomeCorso(nomeCorso);
         filter.setLivello(livello);
-        filter.setFrequenza(frequenza);
+        filter.setGiorniASettimana(giorniASettimana);
         filter.setCosto(costo);
         filter.setStrumenti(strumenti);
         filter.setDataInizio(dataInizio);
@@ -152,5 +154,23 @@ public Page<Corso> getAllCorsiByUser(int page, int size, String nomeCorso, Livel
         CorsoResponse corsoResponse = new CorsoResponse();
         BeanUtils.copyProperties(corso, corsoResponse);
         return corsoResponse;
+    }
+    public List<LocalDate> getGiorniLezione(Long id) {
+        Corso corso = corsoRepository.findById(id).orElseThrow();
+
+        LocalDate inizio = corso.getDataInizio();
+        LocalDate fine = corso.getDataFine();
+        Set<DayOfWeek> giorniLezione = corso.getGiorniLezione();
+
+        List<LocalDate> dateLezione = new ArrayList<>();
+        LocalDate current = inizio;
+
+        while (!current.isAfter(fine)) {
+            if (giorniLezione.contains(current.getDayOfWeek())) {
+                dateLezione.add(current);
+            }
+            current = current.plusDays(1);
+        }
+        return dateLezione;
     }
 }

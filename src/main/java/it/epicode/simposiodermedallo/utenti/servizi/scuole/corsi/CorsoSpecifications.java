@@ -16,9 +16,7 @@ if (filter.getStatoCorso() != null) {
 if (filter.getLivello() != null) {
     predicate = cb.and(predicate, cb.equal(root.get("livello"), filter.getLivello()));
 }
-if (filter.getFrequenza() != null) {
-    predicate = cb.and(predicate, cb.equal(root.get("frequenza"), filter.getFrequenza()));
-}
+
 if (filter.getCosto() != null) {
     predicate = cb.and(predicate, cb.lessThanOrEqualTo(root.get("costo"), filter.getCosto()));
 }
@@ -38,6 +36,10 @@ if (filter.getStrumenti() != null && !filter.getStrumenti().isBlank()) {
 if (filter.getInsegnanteId() != null) {
     Join<Corso, Insegnante> insegnanteJoin = root.join("insegnante");
     predicate = cb.and(predicate, cb.equal(insegnanteJoin.get("id"), filter.getInsegnanteId()));
+}
+
+if (filter.getGiorniASettimana() != null) {
+    predicate = cb.and(predicate, cb.equal(cb.size(root.get("giorniLezione")), filter.getGiorniASettimana()));
 }
     if (filter.getPartecipanteId() != null) {
         Join<Corso, UtenteNormale> partecipantiJoin = root.join("partecipanti");

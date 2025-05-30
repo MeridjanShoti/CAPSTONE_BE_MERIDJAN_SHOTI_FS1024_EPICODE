@@ -1,20 +1,20 @@
 package it.epicode.simposiodermedallo.utenti.servizi.scuole.corsi;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import it.epicode.simposiodermedallo.utenti.persone.insegnanti.Insegnante;
 import it.epicode.simposiodermedallo.utenti.persone.utentinormali.UtenteNormale;
 import it.epicode.simposiodermedallo.utenti.servizi.scuole.Scuola;
 import it.epicode.simposiodermedallo.utenti.servizi.scuole.corsi.enums.Livello;
 import it.epicode.simposiodermedallo.utenti.servizi.scuole.corsi.enums.StatoCorso;
-import it.epicode.simposiodermedallo.utenti.servizi.scuole.corsi.enums.TipoFrequenza;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -42,12 +42,16 @@ public class Corso {
     private LocalDate dataInizio;
     private LocalDate dataFine;
     @Enumerated(EnumType.STRING)
-    private TipoFrequenza frequenza;
+    @ElementCollection(targetClass = DayOfWeek.class)
+    private Set<DayOfWeek> giorniLezione;
+    @Enumerated(EnumType.STRING)
     private StatoCorso statoCorso;
+    @Column(columnDefinition = "TEXT")
     private String note;
     private LocalTime orarioInizio;
     private LocalTime orarioFine;
     private String linkLezione;
+    @Column(columnDefinition = "TEXT")
     private String obiettivi;
     private String locandina;
 }
