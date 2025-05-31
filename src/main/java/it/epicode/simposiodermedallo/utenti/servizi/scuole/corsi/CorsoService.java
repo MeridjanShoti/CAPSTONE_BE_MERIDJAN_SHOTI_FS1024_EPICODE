@@ -2,6 +2,8 @@ package it.epicode.simposiodermedallo.utenti.servizi.scuole.corsi;
 
 import it.epicode.simposiodermedallo.auth.AppUser;
 import it.epicode.simposiodermedallo.auth.Role;
+import it.epicode.simposiodermedallo.common.CommonResponse;
+import it.epicode.simposiodermedallo.utenti.persone.insegnanti.InsegnanteRepository;
 import it.epicode.simposiodermedallo.utenti.servizi.scuole.ScuolaService;
 import it.epicode.simposiodermedallo.utenti.servizi.scuole.corsi.enums.Livello;
 import it.epicode.simposiodermedallo.utenti.servizi.scuole.corsi.enums.StatoCorso;
@@ -27,6 +29,8 @@ public class CorsoService {
     private CorsoRepository corsoRepository;
     @Autowired
     private ScuolaService scuolaService;
+    @Autowired
+    private InsegnanteRepository insegnanteRepository;
     public Corso save(CorsoRequest request, AppUser user) {
         Corso corso = new Corso();
         corso.setNomeCorso(request.getNomeCorso());
@@ -105,6 +109,7 @@ public class CorsoService {
         if (!corso.getScuola().getId().equals(user.getId())) {
             throw new IllegalArgumentException("Non sei la scuola che gestisce questo corso");
         }
+        //da inserire gestione iscritti se presenti
         corsoRepository.delete(corso);
     }
 public Page<Corso> getAllCorsiByUser(int page, int size, String nomeCorso, Livello livello, Integer giorniASettimana, Double costo, String strumenti, LocalDate dataInizio, LocalDate dataFine, StatoCorso statoCorso, Sort sort, AppUser user) {
@@ -115,11 +120,11 @@ public Page<Corso> getAllCorsiByUser(int page, int size, String nomeCorso, Livel
         Long partecipanteId = null;
         Long insegnanteId = null;
         if (user.getRoles().contains(Role.ROLE_SCUOLA)) {
-           insegnanteId = user.getId();
+           scuolaId = user.getId();
         } else if (user.getRoles().contains(Role.ROLE_USER)) {
             partecipanteId = user.getId();
         } else if (user.getRoles().contains(Role.ROLE_ADMIN)) {
-            scuolaId = user.getId();
+            insegnanteId = user.getId();
         }
         CorsoFilter filter = new CorsoFilter();
         filter.setNomeCorso(nomeCorso);
@@ -172,5 +177,14 @@ public Page<Corso> getAllCorsiByUser(int page, int size, String nomeCorso, Livel
             current = current.plusDays(1);
         }
         return dateLezione;
+    }
+    public CommonResponse assegnaInsegnante(Long corsoId, Long insegnanteId, AppUser user) {
+        Corso corso = corsoRepository.findById(corsoId).orElseThrow(() -> new IllegalArgumentException("Corso non trovato"));
+        if (!corso.getScuola().getId().equals(user.getId())) {
+            throw new IllegalArgumentException("Non sei la scuola che gestisce questo corso");
+        }
+        corso.setInsegnante(insegnanteRepository.findById(insegnanteId).orElseThrow(() -> new IllegalArgumentException("Insegnante non trovato")));
+        corsoRepository.save(corso);
+        return new CommonResponse(corsoId);
     }
 }

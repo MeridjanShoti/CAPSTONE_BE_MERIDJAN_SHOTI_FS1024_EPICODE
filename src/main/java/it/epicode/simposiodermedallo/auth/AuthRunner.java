@@ -18,6 +18,10 @@ import it.epicode.simposiodermedallo.utenti.servizi.organizzatoreeventi.eventi.E
 import it.epicode.simposiodermedallo.utenti.servizi.organizzatoreeventi.eventi.TipoEvento;
 import it.epicode.simposiodermedallo.utenti.servizi.scuole.Scuola;
 import it.epicode.simposiodermedallo.utenti.servizi.scuole.ScuolaRepository;
+import it.epicode.simposiodermedallo.utenti.servizi.scuole.corsi.Corso;
+import it.epicode.simposiodermedallo.utenti.servizi.scuole.corsi.CorsoRepository;
+import it.epicode.simposiodermedallo.utenti.servizi.scuole.corsi.enums.Livello;
+import it.epicode.simposiodermedallo.utenti.servizi.scuole.corsi.enums.StatoCorso;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
@@ -58,6 +62,8 @@ public class AuthRunner implements ApplicationRunner {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private SalaProveRepository salaProveRepository;
+    @Autowired
+    private CorsoRepository corsoRepository;
     @Override
     public void run(ApplicationArguments args) throws Exception {
         if (!appUserRepository.existsByRolesContaining(Role.ROLE_ADMIN)) {
@@ -123,6 +129,7 @@ public class AuthRunner implements ApplicationRunner {
                     for (int j = 0; j < 3; j++) {
                         try {
                             Insegnante insegnante = new Insegnante();
+                            String strumento = faker.music().instrument();
                             String nome = faker.name().firstName();
                             String cognome = faker.name().lastName();
                             String emailInsegnante = (nome + cognome + "@email.com").toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9_@.]", "");
@@ -144,9 +151,34 @@ public class AuthRunner implements ApplicationRunner {
                             insegnante.setId(appUserInsegnante.getId());
                             insegnante.setPagaOraria(faker.number().numberBetween(10, 30));
                             insegnante.setScuola(scuola);
-                            insegnante.setStrumenti(List.of(faker.music().instrument(), faker.music().instrument(), faker.music().instrument()));
+                            insegnante.setStrumenti(List.of(faker.music().instrument(), strumento));
                             insegnanteRepository.save(insegnante);
                             scuolaRepository.save(scuola);
+                            Corso corso = new Corso();
+                            String nomeCorso = "corso di " + strumento + " " +  faker.funnyName().name();
+                            LocalDate dataInizio = LocalDate.now().plusDays(faker.number().numberBetween(1, 90));
+                            corso.setStatoCorso(StatoCorso.IN_PROGRAMMA);
+                            corso.setNote(faker.lorem().paragraph());
+                            corso.setNomeCorso(nomeCorso);
+                            corso.setLinkLezione(faker.internet().url());
+                            corso.setInsegnante(insegnante);
+                            corso.setScuola(scuola);
+                            corso.setCosto(faker.number().numberBetween(100, 500));
+                            corso.setLivello(faker.options().option(Livello.values()));
+                            corso.setGiorniLezione(Set.of(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY, DayOfWeek.FRIDAY));
+                            corso.setDataInizio(dataInizio);
+                            corso.setDataFine(dataInizio.plusDays(faker.number().numberBetween(30, 90)));
+                            corso.setStrumenti(List.of( strumento));
+                            corso.setObiettivi(faker.lorem().paragraph());
+                            corso.setLocandina(faker.options().option(scuola.getAvatar(), scuola.getCopertina()));
+                            corso.setMaxPartecipanti(faker.number().numberBetween(10, 20));
+                            corso.setMinPartecipanti(faker.number().numberBetween(1, 5));
+                            LocalTime oraInizio = LocalTime.of(faker.number().numberBetween(8, 16), 0);
+                            LocalTime oraFine = oraInizio.plusHours(faker.number().numberBetween(1, 3));
+                            corso.setOrarioInizio(oraInizio);
+                            corso.setOrarioFine(oraFine);
+                            corsoRepository.save(corso);
+
                         } catch (Exception e) {
                             log.error(e.getMessage());
                         }

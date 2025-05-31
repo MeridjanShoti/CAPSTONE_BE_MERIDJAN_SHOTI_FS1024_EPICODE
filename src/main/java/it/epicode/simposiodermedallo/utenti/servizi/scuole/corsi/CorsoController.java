@@ -1,6 +1,7 @@
 package it.epicode.simposiodermedallo.utenti.servizi.scuole.corsi;
 
 import it.epicode.simposiodermedallo.auth.AppUser;
+import it.epicode.simposiodermedallo.common.CommonResponse;
 import it.epicode.simposiodermedallo.utenti.servizi.scuole.corsi.enums.Livello;
 import it.epicode.simposiodermedallo.utenti.servizi.scuole.corsi.enums.StatoCorso;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -94,5 +95,17 @@ public class CorsoController {
     @GetMapping("/{id}/date-lezione")
     public List<LocalDate> getDateLezione(@PathVariable Long id) {
         return corsoService.getGiorniLezione(id);
+    }
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ROLE_SCUOLA')")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteCorso(@PathVariable Long id, @AuthenticationPrincipal AppUser user) {
+        corsoService.delete(id, user);
+    }
+    @PutMapping("/assegna-insegnante/{idCorso}/{idInsegnante}")
+    @PreAuthorize("hasRole('ROLE_SCUOLA')")
+    @ResponseStatus(HttpStatus.OK)
+    public CommonResponse assegnaInsegnante(@PathVariable Long idCorso, @PathVariable Long idInsegnante, @AuthenticationPrincipal AppUser user) {
+        return corsoService.assegnaInsegnante(idCorso, idInsegnante ,user);
     }
 }
