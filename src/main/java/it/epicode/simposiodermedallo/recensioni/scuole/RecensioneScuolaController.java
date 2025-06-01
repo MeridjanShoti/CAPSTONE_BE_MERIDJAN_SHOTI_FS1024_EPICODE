@@ -1,6 +1,7 @@
 package it.epicode.simposiodermedallo.recensioni.scuole;
 
 import it.epicode.simposiodermedallo.auth.AppUser;
+import it.epicode.simposiodermedallo.recensioni.sale.MediaRecensioniResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -43,5 +44,11 @@ public class RecensioneScuolaController {
     @PreAuthorize("isAuthenticated()")
     public RecensioneScuola updateRecensioneSala(@PathVariable Long id, @RequestBody RecensioneScuolaRequest request, @AuthenticationPrincipal AppUser user) {
         return recensioneScuolaService.update(id, request, user);
+    }
+    @GetMapping("/media/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("isAuthenticated()")
+    public MediaRecensioniResponse getMediaRecensioniSala(@PathVariable Long id) {
+        return recensioneScuolaService.calcolaMediaRecensioni(id);
     }
 }

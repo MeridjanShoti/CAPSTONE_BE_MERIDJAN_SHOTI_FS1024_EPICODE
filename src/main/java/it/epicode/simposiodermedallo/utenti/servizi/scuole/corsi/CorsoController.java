@@ -102,7 +102,7 @@ public class CorsoController {
     public void deleteCorso(@PathVariable Long id, @AuthenticationPrincipal AppUser user) {
         corsoService.delete(id, user);
     }
-    @PutMapping("/assegna-insegnante/{idCorso}/{idInsegnante}")
+    @PatchMapping("/assegna-insegnante/{idCorso}/{idInsegnante}")
     @PreAuthorize("hasRole('ROLE_SCUOLA')")
     @ResponseStatus(HttpStatus.OK)
     public CommonResponse assegnaInsegnante(@PathVariable Long idCorso, @PathVariable Long idInsegnante, @AuthenticationPrincipal AppUser user) {

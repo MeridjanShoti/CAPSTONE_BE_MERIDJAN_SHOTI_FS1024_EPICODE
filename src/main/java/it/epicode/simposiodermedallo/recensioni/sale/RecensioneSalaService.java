@@ -10,6 +10,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.OptionalDouble;
+
 @Service
 @Validated
 public class RecensioneSalaService {
@@ -51,5 +55,14 @@ public class RecensioneSalaService {
         Sort.Direction direction = sortDir.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by(direction, sort));
         return recensioneSalaRepository.findAllBySalaProveId(salaId, pageRequest);
+    }
+    public MediaRecensioniResponse calcolaMediaRecensioni(Long salaId) {
+        List<RecensioneSala> recensioni = recensioneSalaRepository.findAllBySalaProveId(salaId);
+
+        OptionalDouble media = recensioni.stream()
+                .mapToInt(RecensioneSala::getVoto)
+                .average();
+
+        return new MediaRecensioniResponse(media.isPresent() ? Optional.of(media.getAsDouble()) : Optional.empty());
     }
 }

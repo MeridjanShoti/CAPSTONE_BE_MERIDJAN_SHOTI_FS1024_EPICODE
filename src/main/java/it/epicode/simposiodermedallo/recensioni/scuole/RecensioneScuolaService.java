@@ -2,6 +2,7 @@ package it.epicode.simposiodermedallo.recensioni.scuole;
 
 import it.epicode.simposiodermedallo.auth.AppUser;
 import it.epicode.simposiodermedallo.auth.Role;
+import it.epicode.simposiodermedallo.recensioni.sale.MediaRecensioniResponse;
 import it.epicode.simposiodermedallo.recensioni.sale.RecensioneSala;
 import it.epicode.simposiodermedallo.recensioni.sale.RecensioneSalaRepository;
 import it.epicode.simposiodermedallo.recensioni.sale.RecensioneSalaRequest;
@@ -14,6 +15,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.OptionalDouble;
 
 @Service
 @Validated
@@ -56,6 +61,15 @@ public class RecensioneScuolaService {
         Sort.Direction direction = sortDir.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by(direction, sort));
         return recensioneScuolaRepository.findAllByScuolaId(scuolaId, pageRequest);
+    }
+    public MediaRecensioniResponse calcolaMediaRecensioni(Long scuolaId) {
+        List<RecensioneScuola> recensioni = recensioneScuolaRepository.findAllByScuolaId(scuolaId);
+
+        OptionalDouble media = recensioni.stream()
+                .mapToInt(RecensioneScuola::getVoto)
+                .average();
+
+        return new MediaRecensioniResponse(media.isPresent() ? Optional.of(media.getAsDouble()) : Optional.empty());
     }
 }
 
