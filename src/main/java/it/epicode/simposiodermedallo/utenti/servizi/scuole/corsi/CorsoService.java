@@ -3,10 +3,16 @@ package it.epicode.simposiodermedallo.utenti.servizi.scuole.corsi;
 import it.epicode.simposiodermedallo.auth.AppUser;
 import it.epicode.simposiodermedallo.auth.Role;
 import it.epicode.simposiodermedallo.common.CommonResponse;
+import it.epicode.simposiodermedallo.common.EmailSenderService;
+import it.epicode.simposiodermedallo.utenti.UtenteRepository;
 import it.epicode.simposiodermedallo.utenti.persone.insegnanti.InsegnanteRepository;
+import it.epicode.simposiodermedallo.utenti.persone.utentinormali.UtenteNormaleRepository;
 import it.epicode.simposiodermedallo.utenti.servizi.scuole.ScuolaService;
 import it.epicode.simposiodermedallo.utenti.servizi.scuole.corsi.enums.Livello;
 import it.epicode.simposiodermedallo.utenti.servizi.scuole.corsi.enums.StatoCorso;
+import it.epicode.simposiodermedallo.utenti.servizi.scuole.corsi.iscrizioni.IscrizioneRepository;
+import jakarta.mail.MessagingException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -21,7 +27,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-
+@Slf4j
 @Service
 @Validated
 public class CorsoService {
@@ -31,6 +37,12 @@ public class CorsoService {
     private ScuolaService scuolaService;
     @Autowired
     private InsegnanteRepository insegnanteRepository;
+    @Autowired
+    IscrizioneRepository iscrizioneRepository;
+    @Autowired
+    UtenteNormaleRepository utenteNormaleRepository;
+    @Autowired
+    EmailSenderService emailSenderService;
     public Corso save(CorsoRequest request, AppUser user) {
         Corso corso = new Corso();
         corso.setNomeCorso(request.getNomeCorso());
@@ -109,7 +121,16 @@ public class CorsoService {
         if (!corso.getScuola().getId().equals(user.getId())) {
             throw new IllegalArgumentException("Non sei la scuola che gestisce questo corso");
         }
-        //da inserire gestione iscritti se presenti
+        iscrizioneRepository.findAllByCorsoId(id).forEach(iscrizione -> {
+            utenteNormaleRepository.findAll().forEach(utente -> {
+                try {
+                    emailSenderService.sendEmail(utente.getEmail(), "Cancellazione corso", "Il corso " + corso.getNomeCorso() + " è stato cancellato. A breve riceverai un rimborso.");
+                } catch (MessagingException e) {
+                    log.error("Errore nell'invio della mail", e);
+                }
+            });
+            iscrizioneRepository.delete(iscrizione);
+        });
         corsoRepository.delete(corso);
     }
 public Page<Corso> getAllCorsiByUser(int page, int size, String nomeCorso, Livello livello, Integer giorniASettimana, Double costo, String strumenti, LocalDate dataInizio, LocalDate dataFine, StatoCorso statoCorso, Sort sort, AppUser user) {
@@ -123,7 +144,7 @@ public Page<Corso> getAllCorsiByUser(int page, int size, String nomeCorso, Livel
            scuolaId = user.getId();
         } else if (user.getRoles().contains(Role.ROLE_USER)) {
             partecipanteId = user.getId();
-        } else if (user.getRoles().contains(Role.ROLE_ADMIN)) {
+        } else if (user.getRoles().contains(Role.ROLE_INSEGNANTE)) {
             insegnanteId = user.getId();
         }
         CorsoFilter filter = new CorsoFilter();

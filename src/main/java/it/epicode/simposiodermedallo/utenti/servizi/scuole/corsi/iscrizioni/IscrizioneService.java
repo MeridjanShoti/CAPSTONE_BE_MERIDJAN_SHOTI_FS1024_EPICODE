@@ -109,4 +109,14 @@ public class IscrizioneService {
          }
         return iscrizione;
     }
+    public Iscrizione getIscrizioneByUtenteAndCorso(Long idCorso, AppUser user) {
+        Corso corso = corsoRepository.findById(idCorso).orElseThrow(() -> new IllegalArgumentException("Corso non trovato"));
+        if (user.getRoles().contains( Role.ROLE_USER) && !corsoRepository.existsByIdAndPartecipantiId(idCorso, user.getId())) {
+            throw new IllegalArgumentException("Non sei iscritto a questo corso");
+        }
+         if (!user.getRoles().contains( Role.ROLE_USER)) {
+            throw new IllegalArgumentException("Non sei un utente");
+         }
+        return iscrizioneRepository.findByUtenteIdAndCorsoId(user.getId(), idCorso);
+    }
 }

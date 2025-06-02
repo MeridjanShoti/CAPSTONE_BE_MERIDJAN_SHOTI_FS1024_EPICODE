@@ -15,10 +15,10 @@ public class IscrizioneController {
     private IscrizioneService iscrizioneService;
     @PostMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_USER')")
-    public Iscrizione iscriviti(@PathVariable Long id, AppUser user) {
+    public Iscrizione iscriviti(@PathVariable Long id, @AuthenticationPrincipal AppUser user) {
         return iscrizioneService.save(id, user);
     }
-    @PostMapping("/presenze/{idCorso}/{idUtente}")
+    @PatchMapping("/presenze/{idCorso}/{idUtente}")
     public Iscrizione takePresenze(@PathVariable Long idCorso, @PathVariable Long idUtente, @RequestBody PresenzaRequest isPresente, @AuthenticationPrincipal AppUser user) {
         return iscrizioneService.takePresenze(idCorso, idUtente, isPresente.getIsPresente(), user);
     }
@@ -45,5 +45,10 @@ public class IscrizioneController {
     @PreAuthorize("isAuthenticated()")
     public Iscrizione getIscrizione(@PathVariable Long id, @AuthenticationPrincipal AppUser user) {
         return iscrizioneService.getIscrizioneById(id, user);
+    }
+    @GetMapping("/corso/{id}")
+    @PreAuthorize("isAuthenticated()")
+    public Iscrizione getIscrizioneByUtenteAndCorso(@PathVariable Long id, @AuthenticationPrincipal AppUser user) {
+        return iscrizioneService.getIscrizioneByUtenteAndCorso(id, user);
     }
 }
