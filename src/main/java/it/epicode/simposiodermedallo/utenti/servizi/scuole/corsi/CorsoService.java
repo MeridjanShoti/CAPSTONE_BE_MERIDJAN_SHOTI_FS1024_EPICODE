@@ -208,4 +208,7 @@ public Page<Corso> getAllCorsiByUser(int page, int size, String nomeCorso, Livel
         corsoRepository.save(corso);
         return new CommonResponse(corsoId);
     }
+    public List<Corso> getCorsiByInsegnante(AppUser user) {
+        return corsoRepository.findAllByInsegnanteId(user.getId());
+    }
 }

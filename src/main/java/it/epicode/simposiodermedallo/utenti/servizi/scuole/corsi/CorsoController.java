@@ -108,4 +108,10 @@ public class CorsoController {
     public CommonResponse assegnaInsegnante(@PathVariable Long idCorso, @PathVariable Long idInsegnante, @AuthenticationPrincipal AppUser user) {
         return corsoService.assegnaInsegnante(idCorso, idInsegnante ,user);
     }
+    @GetMapping("/insegnante")
+    @PreAuthorize("hasRole('ROLE_INSEGNANTE')")
+    @ResponseStatus(HttpStatus.OK)
+    public List<Corso> getCorsiByInsegnante(@AuthenticationPrincipal AppUser user) {
+        return corsoService.getCorsiByInsegnante(user);
+    }
 }

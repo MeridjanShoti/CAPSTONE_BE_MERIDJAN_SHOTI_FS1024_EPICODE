@@ -25,4 +25,5 @@ public interface CorsoRepository extends JpaRepository<Corso, Long> {
     );
     boolean existsByIdAndPartecipantiId(Long corsoId, Long utenteId);
     Page<Corso> findAll(Specification<Corso> spec, Pageable pageable);
+    List<Corso> findAllByInsegnanteId(Long insegnanteId);
 }
