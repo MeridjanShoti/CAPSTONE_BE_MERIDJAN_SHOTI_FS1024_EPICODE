@@ -43,5 +43,11 @@ public class RecensioneSalaController {
     public RecensioneSala updateRecensioneSala(@PathVariable Long id, @RequestBody RecensioneSalaRequest request, @AuthenticationPrincipal AppUser user) {
         return recensioneSalaService.update(id, request, user);
     }
+    @GetMapping("/media/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("isAuthenticated()")
+    public MediaRecensioniResponse getMediaRecensioniSala(@PathVariable Long id) {
+        return recensioneSalaService.calcolaMediaRecensioni(id);
+    }
 
 }

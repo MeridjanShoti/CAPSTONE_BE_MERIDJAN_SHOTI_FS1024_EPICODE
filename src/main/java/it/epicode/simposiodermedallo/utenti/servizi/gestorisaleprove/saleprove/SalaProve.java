@@ -1,9 +1,7 @@
 package it.epicode.simposiodermedallo.utenti.servizi.gestorisaleprove.saleprove;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import it.epicode.simposiodermedallo.utenti.servizi.gestorisaleprove.GestoreSala;
-import it.epicode.simposiodermedallo.utenti.servizi.gestorisaleprove.saleprove.prenotazioni.PrenotazioneSalaProve;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,7 +9,6 @@ import lombok.NoArgsConstructor;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
-import java.util.List;
 import java.util.Set;
 
 @Data

@@ -2,6 +2,8 @@ package it.epicode.simposiodermedallo.utenti.servizi.organizzatoreeventi.eventi;
 
 import it.epicode.simposiodermedallo.auth.AppUser;
 import it.epicode.simposiodermedallo.auth.Role;
+import it.epicode.simposiodermedallo.commenti.Commento;
+import it.epicode.simposiodermedallo.commenti.CommentoRepository;
 import it.epicode.simposiodermedallo.common.CommonResponse;
 import it.epicode.simposiodermedallo.common.EmailSenderService;
 import it.epicode.simposiodermedallo.utenti.persone.utentinormali.UtenteNormale;
@@ -42,6 +44,8 @@ public class EventoService {
     private PrenotazioneEventoRepository prenotazioneEventoRepository;
     @Autowired
     private UtenteNormaleRepository utenteNormaleRepository;
+    @Autowired
+    private CommentoRepository commentoRepository;
 
     public Evento creaEvento(EventoRequest eventoRequest, AppUser user) {
         if (eventoRequest.getDataEvento().isBefore(LocalDate.now())) {
@@ -115,11 +119,14 @@ public class EventoService {
 
         String nomeEvento = evento.getNomeEvento();
         List<UtenteNormale> partecipanti = evento.getPartecipanti();
+        List<Commento> commenti = commentoRepository.findAllByEventoId(id);
         if (!evento.getOrganizzatore().getId().equals(user.getId())){
             throw new IllegalArgumentException("Non sei autorizzato a eliminare questo evento");
         }
+        commenti.forEach(commento -> commentoRepository.deleteById(commento.getId()));
             prenotazioneEventoRepository.findAllByEventoId(id).forEach(prenotazioneEvento -> prenotazioneEventoRepository.deleteById(prenotazioneEvento.getId()));
         eventoRepository.deleteById(id);
+
         if(partecipanti != null && !partecipanti.isEmpty()){
             partecipanti.forEach(partecipante -> {
                 utenteNormaleRepository.save(partecipante);
