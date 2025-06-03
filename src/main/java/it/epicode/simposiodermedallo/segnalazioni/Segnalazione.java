@@ -1,26 +1,26 @@
 package it.epicode.simposiodermedallo.segnalazioni;
 
-import jakarta.persistence.Entity;
+import it.epicode.simposiodermedallo.auth.AppUser;
+import jakarta.persistence.*;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 
 
 @Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "Segnalazioni")
 public class Segnalazione {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    TipoSegnalazione tipoSegnalazione;
-    String descrizione;
-    String autore;
-    Long idElemento;
+    @Enumerated(EnumType.STRING)
+    private TipoSegnalazione tipoSegnalazione;
+    private String descrizione;
+    @ManyToOne
+    private AppUser autore;
+    private Long idElemento;
 }

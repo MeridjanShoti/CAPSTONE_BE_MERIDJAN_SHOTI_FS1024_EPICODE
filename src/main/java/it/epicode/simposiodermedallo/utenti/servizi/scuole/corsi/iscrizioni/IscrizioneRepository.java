@@ -13,4 +13,5 @@ Iscrizione findByUtenteIdAndCorsoId(Long utenteId, Long corsoId);
 Page<Iscrizione> findAllByCorsoId(Long corsoId, Pageable pageable);
 List<Iscrizione> findAllByCorsoId(Long corsoId);
 Page<Iscrizione> findAllByUtenteId(Long utenteId, Pageable pageable);
+List<Iscrizione> findAllByUtenteId(Long utenteId);
 }

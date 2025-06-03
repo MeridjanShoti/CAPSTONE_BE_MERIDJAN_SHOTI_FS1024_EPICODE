@@ -12,4 +12,5 @@ import java.util.Optional;
 public interface CommentoRepository extends JpaRepository<Commento, Long> {
     Page<Commento> findAllByEventoId(Long id, Pageable pageable);
     List<Commento> findAllByEventoId(Long eventoId);
+    List<Commento> findAllByAutoreId(Long autoreId);
 }

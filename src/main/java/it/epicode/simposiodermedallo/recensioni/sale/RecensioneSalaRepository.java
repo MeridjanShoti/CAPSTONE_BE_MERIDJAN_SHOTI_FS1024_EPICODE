@@ -11,4 +11,5 @@ public interface RecensioneSalaRepository extends JpaRepository<RecensioneSala, 
     Page<RecensioneSala> findAllBySalaProveId(Long id, Pageable pageable);
     List<RecensioneSala> findAllBySalaProveId(Long id);
     Boolean existsBySalaProveIdAndAutoreId(Long salaId, Long autoreId);
+    List<RecensioneSala> findAllByAutoreId(Long autoreId);
 }

@@ -26,4 +26,5 @@ public interface PrenotazioneSalaProveRepository extends JpaRepository<Prenotazi
     );
     boolean existsBySalaProveId(Long id);
     List<PrenotazioneSalaProve> findAllBySalaProveId(Long id);
+    List<PrenotazioneSalaProve> findAllByUtenteId(Long id);
 }
