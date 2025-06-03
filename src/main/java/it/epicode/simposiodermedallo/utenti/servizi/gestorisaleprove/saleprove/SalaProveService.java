@@ -2,6 +2,8 @@ package it.epicode.simposiodermedallo.utenti.servizi.gestorisaleprove.saleprove;
 
 import it.epicode.simposiodermedallo.auth.AppUser;
 import it.epicode.simposiodermedallo.common.EmailSenderService;
+import it.epicode.simposiodermedallo.recensioni.sale.RecensioneSala;
+import it.epicode.simposiodermedallo.recensioni.sale.RecensioneSalaRepository;
 import it.epicode.simposiodermedallo.utenti.servizi.gestorisaleprove.GestoreSala;
 import it.epicode.simposiodermedallo.utenti.servizi.gestorisaleprove.GestoreSalaRepository;
 import it.epicode.simposiodermedallo.utenti.servizi.gestorisaleprove.saleprove.prenotazioni.PrenotazioneSalaProve;
@@ -15,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
@@ -30,6 +33,8 @@ public class SalaProveService {
     private PrenotazioneSalaProveRepository prenotazioneSalaProveRepository;
     @Autowired
     private EmailSenderService emailSenderService;
+    @Autowired
+    private RecensioneSalaRepository recensioneSalaRepository;
     public SalaProve createSalaProve(SalaProveRequest request, AppUser user) {
         SalaProve salaProve = new SalaProve();
         GestoreSala gestoreSala = gestoreSalaRepository.findById(user.getId()).orElseThrow(() -> new IllegalArgumentException("GestoreSala non trovato"));
@@ -85,6 +90,7 @@ public class SalaProveService {
         salaProveRepository.save(salaProve);
         return salaProve;
     }
+    @Transactional
     public void deleteSalaProve(Long id, AppUser user) {
         SalaProve salaProve = salaProveRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("SalaProve non trovata"));
         GestoreSala gestoreSala = gestoreSalaRepository.findById(user.getId()).orElseThrow(() -> new IllegalArgumentException("GestoreSala non trovato"));
@@ -93,6 +99,8 @@ public class SalaProveService {
         }
         if (prenotazioneSalaProveRepository.existsBySalaProveId(id)) {
             List<PrenotazioneSalaProve> prenotazioni = prenotazioneSalaProveRepository.findAllBySalaProveId(id);
+            List<RecensioneSala> recensioni = recensioneSalaRepository.findAllBySalaProveId(id);
+            recensioni.forEach(recensione -> recensioneSalaRepository.delete(recensione));
             prenotazioni.forEach(prenotazione -> {
                 try {
                     emailSenderService.sendEmail(prenotazione.getUtente().getEmail(), "Prenotazione cancellata", "La prenotazione alla sala prove " + prenotazione.getSalaProve().getNomeSala() + " è stata cancellata");
