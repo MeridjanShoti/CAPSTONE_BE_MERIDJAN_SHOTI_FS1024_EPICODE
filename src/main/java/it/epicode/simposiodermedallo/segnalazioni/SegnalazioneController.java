@@ -1,6 +1,7 @@
 package it.epicode.simposiodermedallo.segnalazioni;
 
 import it.epicode.simposiodermedallo.auth.AppUser;
+import it.epicode.simposiodermedallo.common.CommonResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -33,7 +34,21 @@ public class SegnalazioneController {
     @GetMapping("")
     @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.OK)
-    public Page<Segnalazione> getAll( int page, int size, String sort, String sortdir, String Autore, TipoSegnalazione tipoSegnalazione) {
-        return segnalazioneService.getAllSegnalazioni( page, size, sort, sortdir, Autore, tipoSegnalazione);
+    public Page<Segnalazione> getAll( @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size, @RequestParam(defaultValue = "id") String sort, @RequestParam(defaultValue = "asc") String sortdir, @RequestParam(required = false) String autore, @RequestParam(required = false) TipoSegnalazione tipoSegnalazione) {
+        return segnalazioneService.getAllSegnalazioni( page, size, sort, sortdir, autore, tipoSegnalazione);
+    }
+    @DeleteMapping("/approva/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public CommonResponse approva(@PathVariable Long id) {
+        segnalazioneService.approve(id);
+        return new CommonResponse(id);
+    }
+    @DeleteMapping("/rifiuta/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public CommonResponse rifiuta(@PathVariable Long id) {
+        segnalazioneService.delete(id);
+        return new CommonResponse(id);
     }
 }
