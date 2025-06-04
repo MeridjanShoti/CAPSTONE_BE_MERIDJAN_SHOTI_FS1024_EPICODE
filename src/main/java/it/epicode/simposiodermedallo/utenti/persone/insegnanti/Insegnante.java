@@ -24,7 +24,6 @@ import java.util.List;
 public class Insegnante extends Persona {
     @ElementCollection
     private List<String> strumenti;
-    @Column(columnDefinition = "TEXT")
     @Lob
     private byte[] curriculum;
     private double pagaOraria;

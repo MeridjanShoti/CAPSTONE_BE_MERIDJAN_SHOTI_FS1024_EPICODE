@@ -97,19 +97,19 @@ public class CorsoController {
         return corsoService.getGiorniLezione(id);
     }
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ROLE_SCUOLA')")
+    @PreAuthorize("hasRole('SCUOLA')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteCorso(@PathVariable Long id, @AuthenticationPrincipal AppUser user) {
         corsoService.delete(id, user);
     }
     @PatchMapping("/assegna-insegnante/{idCorso}/{idInsegnante}")
-    @PreAuthorize("hasRole('ROLE_SCUOLA')")
+    @PreAuthorize("hasRole('SCUOLA')")
     @ResponseStatus(HttpStatus.OK)
     public CommonResponse assegnaInsegnante(@PathVariable Long idCorso, @PathVariable Long idInsegnante, @AuthenticationPrincipal AppUser user) {
         return corsoService.assegnaInsegnante(idCorso, idInsegnante ,user);
     }
     @GetMapping("/insegnante")
-    @PreAuthorize("hasRole('ROLE_INSEGNANTE')")
+    @PreAuthorize("hasRole('INSEGNANTE')")
     @ResponseStatus(HttpStatus.OK)
     public List<Corso> getCorsiByInsegnante(@AuthenticationPrincipal AppUser user) {
         return corsoService.getCorsiByInsegnante(user);

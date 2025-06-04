@@ -11,5 +11,5 @@ import java.util.List;
 public interface PrenotazioneEventoRepository extends JpaRepository<PrenotazioneEvento, Long> {
     List<PrenotazioneEvento> findAllByEventoId(Long id);
     Page<PrenotazioneEvento> findAll(Specification<PrenotazioneEvento> spec, Pageable pageable);
-    List<PrenotazioneEvento> findAllByUtenteId(Long id);
+    List<PrenotazioneEvento> findAllByUtenteNormaleId(Long id);
 }

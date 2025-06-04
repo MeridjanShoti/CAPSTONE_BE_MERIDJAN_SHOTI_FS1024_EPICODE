@@ -15,6 +15,7 @@ public class UtenteNormaleController {
     @Autowired
     private UtenteNormaleService utenteNormaleService;
     @GetMapping("/{id}")
+    @PreAuthorize("isAuthenticated()")
     public UtenteNormale getUtenteNormaleById(@PathVariable Long id) {
         return utenteNormaleService.getUtenteNormaleById(id);
     }

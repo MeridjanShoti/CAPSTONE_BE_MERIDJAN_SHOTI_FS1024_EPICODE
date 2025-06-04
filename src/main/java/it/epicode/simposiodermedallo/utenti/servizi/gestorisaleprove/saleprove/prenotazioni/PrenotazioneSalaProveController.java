@@ -75,7 +75,7 @@ public class PrenotazioneSalaProveController {
         return prenotazioneSalaProveService.getDisponibilita(id, giorno);
     }
     @GetMapping("/disponibilita-update/{prenotazioneId}")
-    @PreAuthorize("hasRole('ROLE_GESTORE_SP')")
+    @PreAuthorize("hasRole('GESTORE_SP')")
     @ResponseStatus(HttpStatus.OK)
     public List<SlotDisponibile> getDisponibilita(
             @PathVariable Long prenotazioneId,

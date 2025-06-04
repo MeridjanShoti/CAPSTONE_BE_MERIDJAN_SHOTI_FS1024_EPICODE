@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface EventoRepository extends JpaRepository<Evento, Long> {
@@ -15,4 +16,5 @@ public interface EventoRepository extends JpaRepository<Evento, Long> {
     Page<Evento> findAll(Specification<Evento> spec, Pageable pageable);
     @Query("SELECT e FROM Evento e LEFT JOIN FETCH e.partecipanti WHERE e.id = :id")
     Optional<Evento> findByIdWithPartecipanti(@Param("id") Long id);
+    List<Evento> findAllByOrganizzatoreId(Long organizzatoreId);
 }

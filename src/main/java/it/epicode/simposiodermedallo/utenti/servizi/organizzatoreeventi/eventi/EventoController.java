@@ -35,7 +35,7 @@ public class EventoController {
         return eventoService.getEvento(id);
     }
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ORGANIZZATORE')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANIZZATORE')")
     public void deleteEvento(@PathVariable Long id, @AuthenticationPrincipal AppUser user) {
         eventoService.deleteEvento(id, user);
     }

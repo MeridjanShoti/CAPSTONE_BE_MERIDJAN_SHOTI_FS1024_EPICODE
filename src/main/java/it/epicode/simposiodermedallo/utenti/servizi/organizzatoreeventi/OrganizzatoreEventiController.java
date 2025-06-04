@@ -1,6 +1,7 @@
 package it.epicode.simposiodermedallo.utenti.servizi.organizzatoreeventi;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,6 +13,7 @@ public class OrganizzatoreEventiController {
     @Autowired
     private OrganizzatoreEventiService organizzatoreEventiService;
     @GetMapping("/{id}")
+    @PreAuthorize("isAuthenticated()")
         public OrganizzatoreEventi getOrganizzatoreById(@PathVariable Long id) {
             return organizzatoreEventiService.getOrganizzatoreEventi(id);
         }
