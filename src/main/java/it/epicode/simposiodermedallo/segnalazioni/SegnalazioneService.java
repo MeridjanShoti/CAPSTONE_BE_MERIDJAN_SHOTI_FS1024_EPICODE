@@ -95,9 +95,18 @@ public class SegnalazioneService {
             segnalazioneRepository.findAllByAutoreId(segnalazione.getIdElemento()).forEach(s -> {
                 segnalazioneRepository.deleteById(s.getId());
             });
-            commentoRepository.findAllByAutoreId(segnalazione.getIdElemento()).forEach(commentoRepository::delete);
-            recensioneSalaRepository.findAllByAutoreId(segnalazione.getIdElemento()).forEach(recensioneSalaRepository::delete);
-            recensioneScuolaRepository.findAllByAutoreId(segnalazione.getIdElemento()).forEach(recensioneScuolaRepository::delete);
+            commentoRepository.findAllByAutoreId(segnalazione.getIdElemento()).forEach(c ->{
+                segnalazioneRepository.findAllByTipoSegnalazioneAndIdElemento(TipoSegnalazione.COMMENTO, c.getId()).forEach(segnalazioneRepository::delete);
+                commentoRepository.deleteById(c.getId());
+            });
+            recensioneSalaRepository.findAllByAutoreId(segnalazione.getIdElemento()).forEach(r -> {
+                    segnalazioneRepository.findAllByTipoSegnalazioneAndIdElemento(TipoSegnalazione.RECENSIONE_SALA, r.getId()).forEach(segnalazioneRepository::delete);
+                    recensioneSalaRepository.deleteById(r.getId());
+            });
+            recensioneScuolaRepository.findAllByAutoreId(segnalazione.getIdElemento()).forEach(r->{
+                segnalazioneRepository.findAllByTipoSegnalazioneAndIdElemento(TipoSegnalazione.RECENSIONE_SCUOLA, r.getId()).forEach(segnalazioneRepository::delete);
+                recensioneScuolaRepository.deleteById(r.getId());
+            });
             iscrizioneRepository.findAllByUtenteId(segnalazione.getIdElemento()).forEach(iscrizioneRepository::delete);
             prenotazioneSalaProveRepository.findAllByUtenteId(segnalazione.getIdElemento()).forEach(prenotazioneSalaProveRepository::delete);
             prenotazioneEventoRepository.findAllByUtenteNormaleId(segnalazione.getIdElemento()).forEach(prenotazioneEventoRepository::delete);
@@ -107,7 +116,10 @@ public class SegnalazioneService {
 
         } else if (segnalazione.getTipoSegnalazione() == TipoSegnalazione.EVENTO){
             Evento evento = eventoRepository.findById(segnalazione.getIdElemento()).orElseThrow(() -> new IllegalArgumentException("Evento non trovato"));
-            commentoRepository.findAllByEventoId(segnalazione.getIdElemento()).forEach(commentoRepository::delete);
+            commentoRepository.findAllByEventoId(segnalazione.getIdElemento()).forEach(c -> {
+                segnalazioneRepository.findAllByTipoSegnalazioneAndIdElemento(TipoSegnalazione.COMMENTO, c.getId()).forEach(segnalazioneRepository::delete);
+                commentoRepository.deleteById(c.getId());
+            });
             prenotazioneEventoRepository.findAllByEventoId(segnalazione.getIdElemento()).forEach(e -> {
                 try {
                     emailSenderService.sendEmail(e.getUtenteNormale().getEmail(), "Evento cancellato", "L'evento " + e.getEvento().getNomeEvento() + " è stato cancellato. Ti invitiamo a controllare in piattaforma. Sarai risarcito sul metodo di pagamento utilizzato durante la prenotazione");
@@ -127,7 +139,10 @@ public class SegnalazioneService {
         } else if (segnalazione.getTipoSegnalazione() == TipoSegnalazione.SALA){
             SalaProve  salaProve = salaProveRepository.findById(segnalazione.getIdElemento()).orElseThrow(() -> new IllegalArgumentException("Sala non trovata"));
             GestoreSala gestoreSala = salaProve.getGestoreSala();
-            recensioneSalaRepository.findAllBySalaProveId(segnalazione.getIdElemento()).forEach(recensioneSalaRepository::delete);
+            recensioneSalaRepository.findAllBySalaProveId(segnalazione.getIdElemento()).forEach(r -> {
+                segnalazioneRepository.findAllByTipoSegnalazioneAndIdElemento(TipoSegnalazione.RECENSIONE_SALA, r.getId()).forEach(segnalazioneRepository::delete);
+                recensioneSalaRepository.deleteById(r.getId());
+            });
             prenotazioneSalaProveRepository.findAllBySalaProveId(segnalazione.getIdElemento()).forEach(p -> {
                 try {
                     emailSenderService.sendEmail(p.getUtente().getEmail(), "Prenotazione cancellata", "La prenotazione alla sala prove " + p.getSalaProve().getNomeSala() + " è stata cancellata");
@@ -147,7 +162,10 @@ public class SegnalazioneService {
         } else if (segnalazione.getTipoSegnalazione() == TipoSegnalazione.SCUOLA){
             segnalazioneRepository.findAllByAutoreId(segnalazione.getIdElemento()).forEach(segnalazioneRepository::delete);
             Scuola scuola = scuolaRepository.findById(segnalazione.getIdElemento()).orElseThrow(() -> new IllegalArgumentException("Scuola non trovata"));
-            recensioneScuolaRepository.findAllByScuolaId(segnalazione.getIdElemento()).forEach(recensioneScuolaRepository::delete);
+            recensioneScuolaRepository.findAllByScuolaId(segnalazione.getIdElemento()).forEach(r->{
+                segnalazioneRepository.findAllByTipoSegnalazioneAndIdElemento(TipoSegnalazione.RECENSIONE_SCUOLA, r.getId()).forEach(segnalazioneRepository::delete);
+                recensioneScuolaRepository.deleteById(r.getId());
+            });
             try {
                 emailSenderService.sendEmail(scuola.getEmail(), "Scuola cancellata", "La scuola " + scuola.getRagioneSociale() + " è stata cancellata dopo aver controllato le segnalazioni. Gli utenti iscritti ai corsi verranno risarciti");
             } catch (MessagingException e) {
@@ -158,9 +176,11 @@ public class SegnalazioneService {
                     corso.setInsegnante(null);
                     corsoRepository.save(corso);
                 });
+                segnalazioneRepository.findAllByTipoSegnalazioneAndIdElemento(TipoSegnalazione.INSEGNANTE, insegnante.getId()).forEach(segnalazioneRepository::delete);
                 insegnanteRepository.deleteById(insegnante.getId());
             });
             corsoRepository.findAllByScuolaId(segnalazione.getIdElemento()).forEach(corso -> {
+                segnalazioneRepository.findAllByTipoSegnalazioneAndIdElemento(TipoSegnalazione.CORSO, corso.getId()).forEach(segnalazioneRepository::delete);
                 iscrizioneRepository.findAllByCorsoId(corso.getId()).forEach(i -> {
                     try {
                         emailSenderService.sendEmail(i.getUtente().getEmail(), "Corso cancellato", "Il corso " + corso.getNomeCorso() + " è stato cancellato. Ti invitiamo a controllare in piattaforma");
@@ -179,7 +199,11 @@ public class SegnalazioneService {
             OrganizzatoreEventi  organizzatoreEventi = organizzatoreEventiRepository.findById(segnalazione.getIdElemento()).orElseThrow(() -> new IllegalArgumentException("Organizzatore non trovato"));
             List<Evento> eventi = eventoRepository.findAllByOrganizzatoreId(segnalazione.getIdElemento());
             eventi.forEach(evento -> {
-                commentoRepository.findAllByEventoId(evento.getId()).forEach(commentoRepository::delete);
+                segnalazioneRepository.findAllByTipoSegnalazioneAndIdElemento(TipoSegnalazione.EVENTO, evento.getId()).forEach(segnalazioneRepository::delete);
+                commentoRepository.findAllByEventoId(evento.getId()).forEach(c -> {
+                    segnalazioneRepository.findAllByTipoSegnalazioneAndIdElemento(TipoSegnalazione.COMMENTO, c.getId()).forEach(segnalazioneRepository::delete);
+                    commentoRepository.deleteById(c.getId());
+                });
                 prenotazioneEventoRepository.findAllByEventoId(evento.getId()).forEach(p ->
                 {
                     try {
@@ -212,6 +236,7 @@ public class SegnalazioneService {
         } else if (segnalazione.getTipoSegnalazione() == TipoSegnalazione.RECENSIONE_SALA) {
             recensioneSalaRepository.deleteById(segnalazione.getIdElemento());
         } else if (segnalazione.getTipoSegnalazione() == TipoSegnalazione.RECENSIONE_SCUOLA) {
+
             recensioneScuolaRepository.deleteById(segnalazione.getIdElemento());
         } else if (segnalazione.getTipoSegnalazione() == TipoSegnalazione.CORSO) {
             Corso corso = corsoRepository.findById(segnalazione.getIdElemento()).orElseThrow(() -> new IllegalArgumentException("Corso non trovato"));
@@ -229,7 +254,11 @@ public class SegnalazioneService {
             segnalazioneRepository.findAllByAutoreId(segnalazione.getIdElemento()).forEach(segnalazioneRepository::delete);
             GestoreSala gestoreSala = gestoreSalaRepository.findById(segnalazione.getIdElemento()).orElseThrow(() -> new IllegalArgumentException("Gestore non trovato"));
             salaProveRepository.findAllByGestoreSalaId(segnalazione.getIdElemento()).forEach(salaProve -> {
-                recensioneSalaRepository.findAllBySalaProveId(salaProve.getId()).forEach(recensioneSalaRepository::delete);
+                segnalazioneRepository.findAllByTipoSegnalazioneAndIdElemento(TipoSegnalazione.SALA, salaProve.getId()).forEach(segnalazioneRepository::delete);
+                recensioneSalaRepository.findAllBySalaProveId(salaProve.getId()).forEach(r->{
+                    segnalazioneRepository.findAllByTipoSegnalazioneAndIdElemento(TipoSegnalazione.RECENSIONE_SALA, r.getId()).forEach(segnalazioneRepository::delete);
+                    recensioneSalaRepository.deleteById(r.getId());
+                });
                 prenotazioneSalaProveRepository.findAllBySalaProveId(salaProve.getId()).forEach( p -> {
                     try {
                         emailSenderService.sendEmail(p.getUtente().getEmail(), "Sala cancellata", "La sala " + salaProve.getNomeSala() + " è stata cancellata dopo aver controllato le segnalazioni. Gli utenti verranno risarciti");
