@@ -65,3 +65,6 @@ La piattaforma è pensata per essere un punto di incontro per tutti coloro che f
 
 ## Link Frontend:
 https://github.com/MeridjanShoti/CAPSTONE_FE_MERIDJAN_SHOTI_FS1024_EPICODE.git
+
+## Link vercel:
+https://simposiodermedallo-git-main-meridjans-projects.vercel.app/
