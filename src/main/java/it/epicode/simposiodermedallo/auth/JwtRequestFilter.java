@@ -54,5 +54,14 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         }
         chain.doFilter(request, response);
     }
-
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        String path = request.getServletPath();
+        return path.equals("/login") ||
+                path.equals("/register") ||
+                path.equals("/register-scuola") ||
+                path.equals("/register-insegnante") ||
+                path.equals("/register-gestore-sp") ||
+                path.equals("/register-organizzatore");
+    }
 }
