@@ -1,7 +1,6 @@
 package it.epicode.simposiodermedallo.auth;
 
 import com.github.javafaker.Faker;
-import it.epicode.simposiodermedallo.utenti.Utente;
 import it.epicode.simposiodermedallo.utenti.persone.insegnanti.Insegnante;
 import it.epicode.simposiodermedallo.utenti.persone.insegnanti.InsegnanteRepository;
 import it.epicode.simposiodermedallo.utenti.persone.utentinormali.UtenteNormale;
@@ -28,14 +27,11 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-import org.springframework.web.multipart.MultipartFile;
-
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
 import java.util.Set;
 @Slf4j
 @Component
@@ -170,7 +166,7 @@ public class AuthRunner implements ApplicationRunner {
                             corso.setDataFine(dataInizio.plusDays(faker.number().numberBetween(30, 90)));
                             corso.setStrumenti(List.of( strumento));
                             corso.setObiettivi(faker.lorem().paragraph());
-                            corso.setLocandina(faker.options().option(scuola.getAvatar(), scuola.getCopertina()));
+                            corso.setLocandina("https://res.cloudinary.com/dweugvdht/image/upload/v1749115482/hzt-music-lessons-banner-templates-editable-online_xr1azy.jpg");
                             corso.setMaxPartecipanti(faker.number().numberBetween(10, 20));
                             corso.setMinPartecipanti(faker.number().numberBetween(1, 5));
                             LocalTime oraInizio = LocalTime.of(faker.number().numberBetween(8, 16), 0);
@@ -258,7 +254,7 @@ public class AuthRunner implements ApplicationRunner {
                     gestoreSala.setBio(faker.lorem().paragraph());
                     gestoreSala.setRagioneSociale("Sala Prove" + nomeGestore);
                     gestoreSala.setAvatar("https://ui-avatars.com/api/?name=" + gestoreSala.getRagioneSociale().replaceAll("[^a-zA-Z0-9]", "+"));
-                    gestoreSala.setCopertina("https://m.media-amazon.com/images/S/pv-target-images/fb3e18571fefeb973850615b530a8c6440fc338e33b00438d52152f38f58fca8._SX1080_FMjpg_.jpg");
+                    gestoreSala.setCopertina("https://res.cloudinary.com/dweugvdht/image/upload/v1749115984/112861-studio-registrazione-audio_izufir.webp");
                     gestoreSala.setIndirizzoPrincipale(faker.address().streetAddress());
                     gestoreSala.setAltreSedi(List.of(faker.address().streetAddress(), faker.address().streetAddress(), faker.address().streetAddress()));
                     gestoreSala.setNumeroTelefono(faker.phoneNumber().cellPhone());
@@ -278,7 +274,7 @@ public class AuthRunner implements ApplicationRunner {
                             salaProve.setCitta(faker.address().city());
                             salaProve.setGestoreSala(gestoreSala);
                             salaProve.setPrezzoOrario(faker.number().numberBetween(10, 30));
-                            salaProve.setCopertinaSala("https://m.media-amazon.com/images/S/pv-target-images/fb3e18571fefeb973850615b530a8c6440fc338e33b00438d52152f38f58fca8._SX1080_FMjpg_.jpg");
+                            salaProve.setCopertinaSala("https://res.cloudinary.com/dweugvdht/image/upload/v1749115691/sala_due_small_tlmsfy.jpg");
                             salaProve.setGiorniApertura(Set.of(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY));
                             salaProve.setOrarioApertura(LocalTime.of(faker.number().numberBetween(9, 13), 0));
                             salaProve.setOrarioChiusura(LocalTime.of(faker.number().numberBetween(18, 23), 0));

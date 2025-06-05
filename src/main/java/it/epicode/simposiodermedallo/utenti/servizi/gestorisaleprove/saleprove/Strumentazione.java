@@ -1,9 +1,6 @@
 package it.epicode.simposiodermedallo.utenti.servizi.gestorisaleprove.saleprove;
 
 import jakarta.persistence.Embeddable;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

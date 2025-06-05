@@ -1,7 +1,6 @@
 package it.epicode.simposiodermedallo.auth;
 
 import it.epicode.simposiodermedallo.common.EmailSenderService;
-import it.epicode.simposiodermedallo.utenti.UtenteRepository;
 import it.epicode.simposiodermedallo.utenti.persone.insegnanti.Insegnante;
 import it.epicode.simposiodermedallo.utenti.persone.insegnanti.InsegnanteRepository;
 import it.epicode.simposiodermedallo.utenti.persone.insegnanti.InsegnanteRequest;

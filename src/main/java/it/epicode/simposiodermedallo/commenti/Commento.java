@@ -1,7 +1,6 @@
 package it.epicode.simposiodermedallo.commenti;
 
 import it.epicode.simposiodermedallo.auth.AppUser;
-import it.epicode.simposiodermedallo.utenti.persone.utentinormali.UtenteNormale;
 import it.epicode.simposiodermedallo.utenti.servizi.organizzatoreeventi.eventi.Evento;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

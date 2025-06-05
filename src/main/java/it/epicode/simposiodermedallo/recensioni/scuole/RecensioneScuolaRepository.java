@@ -1,7 +1,5 @@
 package it.epicode.simposiodermedallo.recensioni.scuole;
 
-
-import it.epicode.simposiodermedallo.recensioni.sale.RecensioneSala;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

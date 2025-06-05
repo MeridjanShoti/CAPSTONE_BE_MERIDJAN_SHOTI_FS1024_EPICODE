@@ -1,6 +1,5 @@
 package it.epicode.simposiodermedallo.utenti.servizi.gestorisaleprove.saleprove.prenotazioni;
 
-import com.github.javafaker.App;
 import it.epicode.simposiodermedallo.auth.AppUser;
 import it.epicode.simposiodermedallo.auth.Role;
 import it.epicode.simposiodermedallo.common.CommonResponse;

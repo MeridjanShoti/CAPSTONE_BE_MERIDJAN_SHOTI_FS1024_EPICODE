@@ -1,8 +1,5 @@
 package it.epicode.simposiodermedallo.utenti.persone.utentinormali;
 
-import it.epicode.simposiodermedallo.auth.AppUser;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.OneToOne;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;

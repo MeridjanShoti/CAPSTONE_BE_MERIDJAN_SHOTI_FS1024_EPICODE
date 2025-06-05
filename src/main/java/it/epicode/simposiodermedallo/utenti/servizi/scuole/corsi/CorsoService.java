@@ -4,7 +4,6 @@ import it.epicode.simposiodermedallo.auth.AppUser;
 import it.epicode.simposiodermedallo.auth.Role;
 import it.epicode.simposiodermedallo.common.CommonResponse;
 import it.epicode.simposiodermedallo.common.EmailSenderService;
-import it.epicode.simposiodermedallo.utenti.UtenteRepository;
 import it.epicode.simposiodermedallo.utenti.persone.insegnanti.InsegnanteRepository;
 import it.epicode.simposiodermedallo.utenti.persone.utentinormali.UtenteNormaleRepository;
 import it.epicode.simposiodermedallo.utenti.servizi.scuole.ScuolaService;

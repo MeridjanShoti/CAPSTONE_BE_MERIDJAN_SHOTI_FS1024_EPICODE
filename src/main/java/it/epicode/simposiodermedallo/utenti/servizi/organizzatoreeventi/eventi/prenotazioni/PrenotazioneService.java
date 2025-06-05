@@ -1,6 +1,5 @@
 package it.epicode.simposiodermedallo.utenti.servizi.organizzatoreeventi.eventi.prenotazioni;
 
-import com.github.javafaker.App;
 import it.epicode.simposiodermedallo.auth.AppUser;
 import it.epicode.simposiodermedallo.common.EmailSenderService;
 import it.epicode.simposiodermedallo.utenti.persone.utentinormali.UtenteNormale;
@@ -11,9 +10,7 @@ import jakarta.mail.MessagingException;
 import jakarta.persistence.criteria.Join;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;

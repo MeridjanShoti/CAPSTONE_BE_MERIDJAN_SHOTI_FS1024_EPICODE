@@ -1,8 +1,6 @@
 package it.epicode.simposiodermedallo.recensioni.sale;
 
 import it.epicode.simposiodermedallo.auth.AppUser;
-import it.epicode.simposiodermedallo.utenti.persone.utentinormali.UtenteNormale;
-import it.epicode.simposiodermedallo.utenti.servizi.Servizio;
 import it.epicode.simposiodermedallo.utenti.servizi.gestorisaleprove.saleprove.SalaProve;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

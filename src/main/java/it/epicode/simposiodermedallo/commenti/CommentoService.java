@@ -1,6 +1,5 @@
 package it.epicode.simposiodermedallo.commenti;
 
-import com.github.javafaker.App;
 import it.epicode.simposiodermedallo.auth.AppUser;
 import it.epicode.simposiodermedallo.auth.AppUserRepository;
 import it.epicode.simposiodermedallo.auth.Role;
