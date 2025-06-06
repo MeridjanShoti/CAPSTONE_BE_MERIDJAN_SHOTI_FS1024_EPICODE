@@ -10,6 +10,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -108,6 +109,7 @@ public class CorsoController {
     public CommonResponse assegnaInsegnante(@PathVariable Long idCorso, @PathVariable Long idInsegnante, @AuthenticationPrincipal AppUser user) {
         return corsoService.assegnaInsegnante(idCorso, idInsegnante ,user);
     }
+    @Transactional(readOnly = true)
     @GetMapping("/insegnante")
     @PreAuthorize("hasRole('INSEGNANTE')")
     @ResponseStatus(HttpStatus.OK)
