@@ -19,6 +19,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import java.time.DayOfWeek;
@@ -207,6 +208,7 @@ public Page<Corso> getAllCorsiByUser(int page, int size, String nomeCorso, Livel
         corsoRepository.save(corso);
         return new CommonResponse(corsoId);
     }
+    @Transactional(readOnly = true)
     public List<Corso> getCorsiByInsegnante(AppUser user) {
         return corsoRepository.findAllByInsegnanteId(user.getId());
     }
