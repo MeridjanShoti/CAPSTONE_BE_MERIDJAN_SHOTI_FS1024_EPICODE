@@ -136,6 +136,7 @@ public class SegnalazioneService {
         } else if (segnalazione.getTipoSegnalazione() == TipoSegnalazione.SALA){
             SalaProve  salaProve = salaProveRepository.findById(segnalazione.getIdElemento()).orElseThrow(() -> new IllegalArgumentException("Sala non trovata"));
             GestoreSala gestoreSala = salaProve.getGestoreSala();
+            String nomeSala = salaProve.getNomeSala();
             recensioneSalaRepository.findAllBySalaProveId(segnalazione.getIdElemento()).forEach(r -> {
                 segnalazioneRepository.findAllByTipoSegnalazioneAndIdElemento(TipoSegnalazione.RECENSIONE_SALA, r.getId()).forEach(segnalazioneRepository::delete);
                 recensioneSalaRepository.deleteById(r.getId());
@@ -149,9 +150,9 @@ public class SegnalazioneService {
                 }
             });
             try {
-                emailSenderService.sendEmail(gestoreSala.getEmail(), "Sala cancellata", "La sala " + salaProveRepository.findById(segnalazione.getIdElemento()).orElseThrow(() -> new IllegalArgumentException("Sala non trovata")).getNomeSala() + " è stata cancellata dopo aver controllato le segnalazioni. Gli utenti verranno risarciti");
+                emailSenderService.sendEmail(gestoreSala.getEmail(), "Sala cancellata", "La sala " + nomeSala + " è stata cancellata dopo aver controllato le segnalazioni. Gli utenti verranno risarciti");
             } catch (MessagingException e) {
-                log.error("Errore durante l'invio dell'email a {} per la sala {}", gestoreSala.getEmail(), salaProveRepository.findById(segnalazione.getIdElemento()).orElseThrow(() -> new IllegalArgumentException("Sala non trovata")).getNomeSala(), e);
+                log.error("Errore durante l'invio dell'email a {} per la sala {}", gestoreSala.getEmail(), nomeSala, e);
             }
             salaProveRepository.deleteById(segnalazione.getIdElemento());
             segnalazioneRepository.deleteById(segnalazione.getId());
